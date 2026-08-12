@@ -1,0 +1,136 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/*
+  Color Palette — KitabCuan Light Theme (High Readability)
+  Based on: colorhunt.co/palette/9ab17ac3cc9be4dfb5fbe8ce
+
+  Primary: #9AB17A family (Fresh Sage / Olive Green)
+  Accent:  #FBE8CE / Warm Amber family (Warm CTA & Highlights)
+  Neutral: Soft Warm Cream & Crisp Charcoal
+*/
+
+:root {
+  --background: 44 30% 98%;      /* #FAF8F3 — clean, warm light background */
+  --foreground: 150 20% 12%;     /* #18221B — dark charcoal text, max legibility */
+
+  /* primary: sage-olive green (#9AB17A) */
+  --color-primary-50:  84 45% 96%;
+  --color-primary-100: 84 40% 91%;
+  --color-primary-200: 83 36% 82%;
+  --color-primary-300: 82 32% 68%;
+  --color-primary-400: 81 26% 56%;   /* #9AB17A */
+  --color-primary-500: 80 32% 44%;
+  --color-primary-600: 80 38% 34%;   /* #47632B — deep sage for text & buttons */
+  --color-primary-700: 80 42% 25%;   /* #33481D */
+  --color-primary-800: 80 44% 18%;
+  --color-primary-900: 81 46% 12%;
+  --color-primary-950: 82 50% 8%;
+
+  /* accent: warm amber & soft peach (#FBE8CE family) */
+  --color-accent-50:  38 100% 97%;
+  --color-accent-100: 36 96% 91%;   /* #FBE8CE soft peach */
+  --color-accent-200: 35 90% 82%;
+  --color-accent-300: 34 85% 70%;
+  --color-accent-400: 32 80% 55%;
+  --color-accent-500: 30 84% 45%;   /* #D47A0E — rich warm amber for CTAs */
+  --color-accent-600: 27 86% 36%;
+  --color-accent-700: 24 88% 28%;
+  --color-accent-800: 22 84% 21%;
+  --color-accent-900: 20 80% 15%;
+  --color-accent-950: 18 85% 9%;
+
+  /* neutral: clean warm stone grays */
+  --color-neutral-50:  44 30% 98%;   /* #FAF8F3 */
+  --color-neutral-100: 42 25% 94%;   /* #F4F1E8 — warm soft surface */
+  --color-neutral-200: 40 20% 88%;   /* #E6E1D5 — soft crisp border */
+  --color-neutral-300: 80 15% 76%;
+  --color-neutral-400: 80 10% 55%;
+  --color-neutral-500: 80 10% 40%;   /* #61695E — secondary text */
+  --color-neutral-600: 80 12% 28%;   /* #41493E — strong secondary */
+  --color-neutral-700: 80 16% 20%;
+  --color-neutral-800: 80 20% 14%;
+  --color-neutral-900: 80 24% 10%;
+  --color-neutral-950: 80 30% 6%;
+
+  /* semantic tokens — MUST be space-separated HSL channels (e.g., 0 0% 100%), NOT hex codes */
+  --primary: var(--color-primary-600);
+  --primary-foreground: 0 0% 100%;
+  --accent: var(--color-accent-500);
+  --accent-foreground: 0 0% 100%;
+  --muted: var(--color-neutral-100);
+  --muted-foreground: var(--color-neutral-500);
+  --border: var(--color-neutral-200);
+  --card: 0 0% 100%;
+  --card-foreground: var(--color-neutral-900);
+}
+
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 5rem;
+}
+
+body {
+  color: hsl(var(--foreground));
+  background: hsl(var(--background));
+  font-feature-settings: "rlig" 1, "calt" 1;
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+
+  /* Teks gradasi hangat — kontras tinggi & jelas dibaca di latar terang */
+  .text-gradient-gold {
+    background-image: linear-gradient(
+      115deg,
+      hsl(27 88% 34%),
+      hsl(32 90% 42%) 50%,
+      hsl(24 88% 30%)
+    );
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+
+  /* Untuk elemen pada sampul kitab/buku */
+  .text-gradient-gold-on-dark {
+    background-image: linear-gradient(
+      110deg,
+      hsl(38 100% 92%),
+      hsl(35 95% 82%) 50%,
+      hsl(38 100% 92%)
+    );
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+
+  .text-gradient-emerald {
+    background-image: linear-gradient(
+      110deg,
+      hsl(var(--color-primary-700)),
+      hsl(var(--color-primary-500))
+    );
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+
+  /* Background aurora yang terang, fresh & lembut */
+  .bg-aurora {
+    background-image:
+      radial-gradient(60% 55% at 15% 20%, hsl(var(--color-primary-400) / 0.18), transparent 70%),
+      radial-gradient(50% 50% at 85% 15%, hsl(var(--color-accent-300) / 0.22), transparent 70%),
+      radial-gradient(70% 60% at 50% 100%, hsl(var(--color-neutral-200) / 0.35), transparent 70%);
+  }
+
+  .bg-grid {
+    background-image:
+      linear-gradient(hsl(var(--color-neutral-500) / 0.08) 1px, transparent 1px),
+      linear-gradient(90deg, hsl(var(--color-neutral-500) / 0.08) 1px, transparent 1px);
+    background-size: 64px 64px;
+  }
+}
