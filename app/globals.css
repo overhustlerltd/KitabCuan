@@ -12,6 +12,7 @@
 */
 
 :root {
+  color-scheme: light;
   --background: 44 30% 98%;      /* #FAF8F3 — clean, warm light background */
   --foreground: 150 20% 12%;     /* #18221B — dark charcoal text, max legibility */
 

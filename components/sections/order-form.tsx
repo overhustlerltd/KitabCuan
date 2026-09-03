@@ -135,12 +135,9 @@ export function OrderForm() {
   };
 
   return (
-    <section id="order" className="bg-neutral-100/60 py-16 md:py-24">
+    <section id="order" className="bg-neutral-100/60 pb-16 pt-10 md:pb-24 md:pt-12">
       <div className="mx-auto max-w-2xl px-4 md:px-8">
         <div className="flex flex-col gap-2 text-center">
-          <h2 className="font-heading text-3xl font-extrabold tracking-tight text-foreground sm:text-4xl">
-            {ORDER_FORM_CONTENT.headline}
-          </h2>
           <p className="text-base text-neutral-600 sm:text-lg">{ORDER_FORM_CONTENT.description}</p>
         </div>
 
@@ -238,7 +235,39 @@ export function OrderForm() {
                 )}
               </div>
 
-              <Button type="submit" variant="accent" size="lg" disabled={isSubmitting} className="mt-3 py-4 text-lg font-black tracking-wide shadow-glow-accent">
+              {/* Rincian Pesanan + Total */}
+              <div className="rounded-2xl border border-border bg-muted/40 p-5">
+                <p className="font-heading text-lg font-bold text-foreground">
+                  {ORDER_FORM_CONTENT.summaryTitle}
+                </p>
+                <div className="mt-4 flex flex-col gap-3">
+                  {ORDER_FORM_CONTENT.summaryItems.map((item) => (
+                    <div key={item.label} className="flex items-start justify-between gap-3">
+                      <div>
+                        <p className="text-base font-semibold text-foreground">{item.label}</p>
+                        {item.note && <p className="text-sm text-neutral-500">{item.note}</p>}
+                      </div>
+                      <p
+                        className={`whitespace-nowrap text-base font-semibold ${
+                          item.isDiscount ? "text-green-600" : "text-foreground"
+                        }`}
+                      >
+                        {item.value}
+                      </p>
+                    </div>
+                  ))}
+                </div>
+                <div className="mt-4 flex items-center justify-between border-t border-border pt-4">
+                  <span className="font-heading text-lg font-bold text-foreground">
+                    {ORDER_FORM_CONTENT.totalLabel}
+                  </span>
+                  <span className="font-heading text-2xl font-extrabold text-primary sm:text-3xl">
+                    {ORDER_FORM_CONTENT.totalValue}
+                  </span>
+                </div>
+              </div>
+
+              <Button type="submit" variant="accent" size="lg" disabled={isSubmitting} className="mt-1 py-4 text-lg font-black tracking-wide shadow-glow-accent">
                 {isSubmitting && <Loader2 className="h-5 w-5 animate-spin" />}
                 {ORDER_FORM_CONTENT.submitLabel}
               </Button>

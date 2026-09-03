@@ -3,7 +3,6 @@
 import { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { CheckCircle2, X } from "lucide-react";
-import { ChefHat } from "lucide-react";
 
 type BuyerNotification = {
   id: number;
@@ -80,8 +79,11 @@ export function PurchaseNotification() {
               {/* Body: Thumbnail + Info */}
               <div className="flex items-center gap-3">
                 {/* Book Thumbnail Icon with Verified Checkmark */}
-                <div className="relative flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-gradient-kitab text-white shadow-sm ring-1 ring-primary/20">
-                  <ChefHat className="h-6 w-6 text-amber-200" />
+                <div className="relative flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-xl bg-gradient-kitab shadow-sm ring-1 ring-primary/30">
+                  <div className="text-center leading-[0.82]">
+                    <span className="block font-heading text-[0.6rem] font-black tracking-tight text-primary-50">KITAB</span>
+                    <span className="text-gradient-gold-on-dark block font-heading text-[0.6rem] font-black tracking-tight">CUAN</span>
+                  </div>
                   <div className="absolute -bottom-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-emerald-500 text-white ring-2 ring-white">
                     <CheckCircle2 className="h-3 w-3 fill-emerald-500 text-white" />
                   </div>
@@ -91,6 +93,7 @@ export function PurchaseNotification() {
                 <div className="flex flex-col text-left">
                   <p className="text-xs leading-tight text-neutral-800 sm:text-sm">
                     <strong className="font-extrabold text-foreground">{current.name}</strong>{" "}
+                    <span className="text-neutral-500">dari {current.location}</span>{" "}
                     <span className="text-neutral-600">baru saja membeli</span>
                   </p>
                   <p className="text-[0.75rem] font-semibold text-neutral-500">

@@ -61,16 +61,17 @@ export const SOCIAL_LINKS: SocialLink[] = [
 ];
 
 export const HERO_CONTENT = {
-  eyebrow: "Panduan Digital Bisnis Kuliner Rumahan",
-  headlineLine1: "Resep Cuan dari",
-  headlineLine2: "Dapur Rumahmu",
+  eyebrow: "🔥 KHUSUS KAMU YANG MAU MULAI USAHA TANPA HARUS MODAL BESAR",
+  headlineLine1: "Bangun Bisnis dari Nol Sampai Punya",
+  headlineLine2: "Sistem yang Menghasilkan Jutaan Rupiah",
+  subheadlineLead:
+    "Tanpa harus sewa toko, punya karyawan, atau keluar modal puluhan juta!",
   subheadline:
-    "Panduan buat kamu yang pengen hasilkan uang dari masak-masakan — dari pilih menu yang laku, hitung HPP, sampai dapat pelanggan pertama lewat WhatsApp dan Instagram.",
-  primaryCta: { label: "Ambil Kitabnya", href: "/#harga" },
-  secondaryCta: { label: "Intip Isi Kitab", href: "/#isi-kitab" },
+    "Dapatkan 100+ ide bisnis + sistem jualan + strategi marketing + tools bisnis dan panduan lengkap, yang bisa langsung kamu gunakan untuk mulai membangun usaha dari rumah.",
+  primaryCta: { label: "💰 SAYA MAU PUNYA SUMBER CUAN", href: "#order" },
+  secondaryCta: { label: "Intip Isi Kitab", href: "#produk" },
   socialProofCount: "3.200+",
-  socialProofLabel: "penjual makanan rumahan sudah mulai cuan",
-  socialProofNote: "Disusun dari praktik nyata ibu rumah tangga dan pejuang dapur, bukan teori koki profesional",
+  socialProofLabel: "orang sudah mulai cuan dari paket ini",
   bookTitleTop: "KITAB",
   bookTitleBottom: "CUAN",
   bookEdition: "Resep Bisnis Dapur",
@@ -109,41 +110,38 @@ export type IconName =
   | "Flame";
 
 export const PAIN_POINTS_CONTENT = {
-  headline: "Kalau Ini Kamu Banget, Panduan Ini Emang Dibuat Buat Kamu",
-  subheadline:
-    "Empat hal ini yang paling sering bikin niat jualan masakan berhenti cuma jadi wacana di dapur.",
+  headline: "MAU CUAN, TAPI BINGUNG MULAI DARI MANA?",
   points: [
-    {
-      icon: "Compass" as IconName,
-      title: "Mau Jualan Masakan tapi Bingung Mulai dari Mana",
-      description:
-        "Sudah bisa masak enak, tapi nggak tahu menu apa yang paling laku, harga berapa, dan bagaimana cara jualinnya.",
-    },
-    {
-      icon: "ShieldAlert" as IconName,
-      title: "Takut Harga Jual Salah, Malah Buntung",
-      description:
-        "Bingung ngitung HPP dan takut harga terlalu murah sampai nggak untung, atau terlalu mahal sampai nggak ada yang beli.",
-    },
-    {
-      icon: "Wallet" as IconName,
-      title: "Modal Dapur Terbatas, Nggak Berani Ambil Risiko",
-      description:
-        "Bahan-bahan mahal, takut salah beli stok yang akhirnya mubazir karena belum ada pembeli.",
-    },
-    {
-      icon: "Clock" as IconName,
-      title: "Masak Sudah Capek, Promosinya Nggak Tahu Caranya",
-      description:
-        "Habis masak seharian, energi tinggal seuprit buat mikirin caption, foto produk, dan cara posting di medsos.",
-    },
+    "Pengen bisnis, tapi nggak tahu mau jual apa.",
+    "Punya ide, tapi nggak tahu cara mulai.",
+    "Takut keluar modal tapi ternyata nggak laku.",
+    "Sudah coba jualan, tapi bingung cara marketingnya.",
+    "Mau bikin konten, tapi setiap hari kehabisan ide.",
   ],
-  reassurance: {
-    icon: "Users" as IconName,
-    title: "Yang ngerasain ini bukan cuma kamu",
-    description:
-      "Ribuan ibu rumah tangga dan pejuang dapur mulai dari titik yang sama, dan sekarang sudah punya pelanggan setia sendiri.",
-  },
+  closing: "Sekarang, semuanya ada dalam satu paket.",
+};
+
+export const SOLUTION_CONTENT = {
+  headline: "Kenapa Banyak Orang Gagal Mulai Bisnis? 💡",
+  intro:
+    "Karena mereka mencoba membangun sesuatu yang besar tanpa punya sistem yang jelas.",
+  struggles: [
+    "Mencari ide sendiri.",
+    "Belajar dari banyak tempat.",
+    "Mencoba banyak strategi.",
+    "Dan sering kali berhenti sebelum melihat hasilnya.",
+  ],
+  pivotLabel: "Sekarang?",
+  pivot: "Kamu tidak perlu lagi melewati proses itu sendirian.",
+  body:
+    "KitabCuan membantu menyederhanakan perjalanan membangun bisnis, dari bingung menjadi punya arah, dari rencana menjadi aksi.",
+  transforms: [
+    { from: "Bingung", to: "Punya arah" },
+    { from: "Rencana", to: "Aksi" },
+  ],
+  closing: "Bisnis yang dulu terasa rumit... sekarang bisa dimulai dengan lebih mudah.",
+  ctaLabel: "📕 DAPATKAN KITABCUAN SEKARANG",
+  ctaHref: "#order",
 };
 
 export const WHY_NOW_CONTENT = {
@@ -189,6 +187,193 @@ export const WHY_NOW_CONTENT = {
     description:
       "Kamu nggak perlu ngumpulin info dari mana-mana lagi. Dari pilih menu, hitung modal, sampai cara promosi — semua urutannya rapi dalam satu panduan.",
   },
+};
+
+export const AUDIENCE_CONTENT = {
+  headline: "KITABCUAN DIBUAT UNTUK KAMU",
+  subheadline: "Apa pun titik mulaimu, panduannya menyesuaikan.",
+  items: [
+    {
+      emoji: "👩🏻",
+      title: "Ibu Rumah Tangga",
+      description: "Ingin punya penghasilan tambahan dari rumah tanpa harus meninggalkan keluarga.",
+    },
+    {
+      emoji: "💼",
+      title: "Karyawan",
+      description: "Ingin membangun side business sambil tetap menjalankan pekerjaan utama.",
+    },
+    {
+      emoji: "🎓",
+      title: "Mahasiswa & Anak Muda",
+      description: "Ingin mulai belajar bisnis dan menghasilkan dengan modal yang lebih terjangkau.",
+    },
+    {
+      emoji: "💡",
+      title: "Pemula",
+      description: "Belum pernah punya bisnis dan benar-benar nggak tahu harus mulai dari mana.",
+    },
+  ],
+};
+
+export const BRIDGE_CONTENT = {
+  headline: "SEMUA SUDAH KAMI SIAPKAN ❗",
+  body: "Kami sudah menyusun panduan, strategi, dan tools bisnis yang kamu butuhkan dalam satu paket lengkap untuk membantu kamu mulai dan mengembangkan bisnis.",
+  highlight: "TIDAK PERLU MULAI DARI NOL",
+};
+
+export const PRODUCT_REVEAL_CONTENT = {
+  eyebrow: "Paket Usaha Sumber Cuan",
+  headline: "APA SAJA YANG AKAN KAMU DAPATKAN?",
+  core: [
+    {
+      emoji: "💡",
+      title: "100+ Ide Bisnis Potensial",
+      description: "Berbagai ide usaha yang bisa kamu pilih sesuai minat, modal, dan peluang pasar.",
+    },
+    {
+      emoji: "📕",
+      title: "Panduan Lengkap Memulai Bisnis",
+      description: "Langkah-langkah praktis untuk membantu kamu mulai dari mencari ide sampai menjalankan bisnis.",
+    },
+    {
+      emoji: "🚀",
+      title: "Sistem Bisnis Siap Pakai",
+      description: "Panduan, strategi, dan cara kerja bisnis yang bisa langsung kamu pelajari dan praktikkan.",
+    },
+  ],
+  bonusTitle: "BONUS EKSKLUSIF",
+  bonusValueNote: "Senilai Rp2.000.000+",
+  bonuses: [
+    {
+      title: "Strategi Marketing & Branding",
+      description: "Cara membuat bisnis lebih dikenal, menarik customer, dan membangun brand yang kuat.",
+      value: "Rp300rb",
+    },
+    {
+      title: "48+ Template Desain Marketing",
+      description: "Template siap edit untuk kebutuhan promosi, konten sosial media, banner, dan materi jualan.",
+      value: "Rp350rb",
+    },
+    {
+      title: "Panduan Jualan Online",
+      description: "Pelajari cara memasarkan produk melalui marketplace dan platform online.",
+      value: "Rp200rb",
+    },
+    {
+      title: "Template Keuangan Bisnis",
+      description: "Bantu mencatat pemasukan, pengeluaran, modal, dan menghitung keuntungan bisnis.",
+      value: "Rp250rb",
+    },
+    {
+      title: "Kalkulator Simulasi Profit",
+      description: "Hitung perkiraan modal, omzet, dan keuntungan sebelum menjalankan bisnis.",
+      value: "Rp197rb",
+    },
+    {
+      title: "AI Tools Untuk Bisnis",
+      description: "Gunakan AI untuk membantu mencari ide, membuat konten, dan mempercepat pekerjaan bisnis.",
+      value: "Rp500rb",
+    },
+    {
+      title: "Kumpulan Resource Bisnis",
+      description: "Berbagai tambahan tools dan materi pendukung untuk membantu perjalanan bisnis kamu.",
+      value: "Rp200rb",
+    },
+  ],
+  totalLabel: "TOTAL NILAI SEMUA YANG KAMU DAPATKAN",
+  totalValue: "Rp3.000.000+",
+  todayLabel: "HARGA SPESIAL KHUSUS HARI INI",
+  priceLead: "Kamu tidak perlu membayar jutaan rupiah untuk mendapatkan semuanya. Hari ini, cukup:",
+  promoPrice: "Rp297.000",
+  ctaLabel: "📦 DAPATKAN KITABCUAN SEKARANG",
+  ctaHref: "#order",
+};
+
+export const IMAGINE_CONTENT = {
+  headline: "Bayangin Kalau Mulai Bisnis Jadi Semudah Ini…",
+  steps: [
+    {
+      emoji: "🌅",
+      time: "Pagi",
+      seg: [
+        { t: "Kamu buka KitabCuan", b: true },
+        { t: " dan sudah tahu apa yang harus dilakukan hari ini." },
+      ],
+    },
+    {
+      emoji: "💡",
+      seg: [
+        { t: "Kamu menemukan " },
+        { t: "ide bisnis yang cocok", b: true },
+        { t: ", lalu mulai menyusun produk dan strategi tanpa harus menebak-nebak dari nol." },
+      ],
+    },
+    {
+      emoji: "📱",
+      time: "Siang",
+      seg: [
+        { t: "Kamu mulai " },
+        { t: "promosi, membuat konten, dan menawarkan produk", b: true },
+        { t: " dengan bantuan tools yang sudah disiapkan." },
+      ],
+    },
+    {
+      emoji: "💰",
+      seg: [
+        { t: "Perlahan, " },
+        { t: "order pertama mulai masuk.", b: true },
+        { t: " Lalu repeat order. Lalu pelanggan baru." },
+      ],
+    },
+    {
+      emoji: "🔄",
+      time: "Besoknya",
+      seg: [
+        { t: "Kamu tinggal " },
+        { t: "evaluasi, perbaiki, dan kembangkan", b: true },
+        { t: " apa yang sudah berjalan." },
+      ],
+    },
+  ],
+  reassure:
+    "Semua bisa dimulai dari rumah, sambil kerja, kuliah, atau menjalankan aktivitasmu sehari-hari.",
+  withouts: [
+    "Tanpa harus punya pengalaman bisnis bertahun-tahun",
+    "Tanpa harus langsung mengeluarkan modal besar",
+    "Tanpa harus bingung mencari semuanya sendiri",
+  ],
+  closingTitle: "🚀 INI BUKAN SEKADAR PANDUAN BISNIS.",
+  closingBody:
+    "KitabCuan dirancang untuk membantu kamu menemukan ide, mulai berjualan, dan membangun sumber penghasilan dari bisnis.",
+  fomoLead:
+    "Sudah banyak yang menggunakannya untuk mulai membangun penghasilan tambahan, bahkan dengan hasil hingga",
+  fomoHighlight: "Rp20 juta+ / bulan",
+  transition: "Dan sekarang…",
+  finalLine: "💚 Giliran kamu mulai membangun cuanmu sendiri.",
+  ctaLabel: "📦 DAPATKAN KITABCUAN SEKARANG",
+  ctaHref: "#order",
+};
+
+export const MAIN_REASON_CONTENT = {
+  headline: "Kenapa Harus Ambil KitabCuan Sekarang?",
+  reasons: [
+    {
+      emoji: "🛠️",
+      title: "Bukan Sekadar E-Book Teori",
+      description: "KitabCuan berisi panduan, tools, dan template praktis yang bisa langsung kamu gunakan untuk membangun bisnis.",
+    },
+    {
+      emoji: "⏱️",
+      title: "Hemat Waktu & Hindari Trial Error",
+      description: "Tidak perlu menghabiskan waktu mencari informasi dari banyak tempat. Semua sudah dirangkum dalam satu paket lengkap.",
+    },
+    {
+      emoji: "💎",
+      title: "Value Besar Dengan Harga Terjangkau",
+      description: "Dapatkan berbagai resource bisnis senilai jutaan rupiah tanpa harus membeli semuanya satu per satu.",
+    },
+  ],
 };
 
 export const PRODUCT_CONTENTS_CONTENT = {
@@ -251,13 +436,13 @@ export const BONUS_CONTENT = {
 };
 
 export const PRICING_CONTENT = {
-  urgencyBadge: "🔥 DISKON 60% — KHUSUS HARI INI",
-  discountTag: "SAVINGS 60%",
-  savingsText: "HEMAT Rp300.000",
+  urgencyBadge: "🔥 DISKON 75% — KHUSUS HARI INI",
+  discountTag: "SAVINGS 75%",
+  savingsText: "HEMAT Rp891.000",
   title: "Paket KitabCuan Resep Dapur",
   description: "Kitab utama, seluruh template, kalkulator HPP, plus semua bonusnya. Sekali bayar, punya selamanya.",
-  originalPrice: "Rp497.000",
-  promoPrice: "Rp197.000",
+  originalPrice: "Rp1.188.000",
+  promoPrice: "Rp297.000",
   priceNote: "Sekali bayar. Nggak ada biaya bulanan.",
   benefits: [
     "Akses seumur hidup ke seluruh isi kitab",
@@ -268,7 +453,7 @@ export const PRICING_CONTENT = {
     "Seluruh bonus eksklusif senilai Rp525.000",
     "Update edisi baru, gratis selamanya",
   ],
-  ctaLabel: "AMBIL DISKON Rp197.000 SEKARANG",
+  ctaLabel: "AMBIL DISKON Rp297.000 SEKARANG",
   ctaHref: "#order",
   footnote: "Sekali bayar. Nggak ada biaya langganan tersembunyi.",
 };
@@ -282,7 +467,7 @@ export const FAQ_CONTENT = {
     {
       question: "Aku bisa masak tapi nggak punya pengalaman bisnis, cocok nggak?",
       answer:
-        "Justru kamu yang paling disasar. Panduan ini dimulai dari titik paling awal — dari cara pilih menu yang laku sampai cara dapat pembeli pertama, semuanya dijelaskan step by step tanpa asumsi kamu sudah paham bisnis.",
+        "Justru kamu yang paling disasar. Panduan ini dimulai dari titik paling awal, dari cara pilih menu yang laku sampai cara dapat pembeli pertama, semuanya dijelaskan step by step tanpa asumsi kamu sudah paham bisnis.",
     },
     {
       question: "Butuh modal berapa buat mulai jualan makanan rumahan?",
@@ -297,7 +482,7 @@ export const FAQ_CONTENT = {
     {
       question: "Bedanya apa sama konten memasak gratis di YouTube atau Instagram?",
       answer:
-        "Konten gratis biasanya fokus pada resep, bukan bisnis. Di sini kamu dapat panduan lengkap soal hitung HPP, strategi harga, cara foto makanan yang menggoda, sampai cara jualan di medsos — semuanya dalam satu alur yang rapi.",
+        "Konten gratis biasanya fokus pada resep, bukan bisnis. Di sini kamu dapat panduan lengkap soal hitung HPP, strategi harga, cara foto makanan yang menggoda, sampai cara jualan di medsos, semuanya dalam satu alur yang rapi.",
     },
     {
       question: "Panduannya dikirim gimana? Ada buku fisiknya?",
@@ -307,17 +492,77 @@ export const FAQ_CONTENT = {
   ] as FaqItem[],
 };
 
+export const FINAL_OFFER_CONTENT = {
+  badge: "🔴 KESEMPATAN TERAKHIR",
+  headline: "JANGAN HABISKAN JUTAAN RUPIAH UNTUK MULAI BISNIS DARI NOL",
+  painIntro: "Banyak orang ingin mulai bisnis, tapi akhirnya menghabiskan banyak uang untuk:",
+  pains: [
+    "Membeli berbagai kelas bisnis yang mahal",
+    "Menggunakan tools yang harus dibayar satu per satu",
+    "Mencoba strategi yang belum tentu berhasil",
+    "Trial & error tanpa tahu langkah yang tepat",
+  ],
+  painClosing:
+    "Dan yang paling mahal… adalah waktu yang terbuang karena tidak memiliki panduan yang jelas.",
+  pivot: "TAPI SEKARANG…",
+  pivotBody:
+    "Kamu bisa mendapatkan akses dengan total value jutaan rupiah tanpa harus mengeluarkan modal besar di awal.",
+  valueLabel: "Dengan seluruh isi paket:",
+  valueAmount: "Rp3.000.000+",
+  valueTag: "VALUE",
+  valueNote: "Kamu tidak perlu membeli semuanya satu per satu.",
+  todayLabel: "KHUSUS HARI INI…",
+  todayOriginal: "Rp2.475.000",
+  todayPrice: "Rp297.000",
+  todayDiscount: "DISKON 88%",
+  imagine:
+    "Bayangkan… dengan modal kurang dari Rp300 ribu, kamu sudah memiliki bekal lengkap untuk mulai membangun bisnis dan membuka peluang menghasilkan jutaan rupiah setiap bulannya.",
+  earlyBadge: "🎁 KHUSUS 50 PEMBELI PERTAMA HARI INI",
+  earlyLabel: "Bisa mendapatkan harga spesial:",
+  earlyPrice: "Rp197.000",
+  earlyBonusLabel: "Dengan bonus tambahan:",
+  earlyBonuses: [
+    { icon: "✅", text: "Akses KitabCuan Selamanya" },
+    { icon: "🎁", text: "BONUS Template Keuangan Bisnis" },
+    { icon: "🎁", text: "BONUS Template Marketing Premium" },
+    { icon: "🎁", text: "FREE Update & Resource Tambahan" },
+  ],
+  warningLabel: "⚠️ INGAT!",
+  warning:
+    "Harga promo Rp197.000 akan kembali menjadi Rp297.000 setelah 50 pembeli pertama terpenuhi. Karena kami ingin memberikan harga terbaik untuk orang-orang yang benar-benar siap mengambil langkah pertama.",
+  urgency:
+    "Semakin lama kamu menunda, semakin lama kamu berada di titik yang sama. Sementara orang lain sudah mulai belajar, mencoba, dan membangun bisnis mereka lebih dulu.",
+  promoCtaLabel: "AMBIL PROMO SPESIAL INI SEBELUM KEHABISAN",
+  countdownHours: 6,
+  ctaLabel: "📦 DAPATKAN KITABCUAN SEKARANG",
+  ctaHref: "#order",
+};
+
 export const FINAL_CTA_CONTENT = {
-  eyebrow: "⚡ HARI INI DISKON 60%",
+  eyebrow: "⚡ HARI INI DISKON 75%",
   headline: "Jangan Sampai Dapur Kamu Cuma Jadi Tempat Masak",
   description:
-    "Harga hemat Rp197.000 (Diskon 60%) cuma berlaku selama kuota gelombang ini masih tersedia.",
+    "Harga hemat Rp297.000 (Diskon 75%) cuma berlaku selama kuota gelombang ini masih tersedia.",
   priceRecapLabel: "Harga Spesial Hari Ini",
-  savingsBadge: "HEMAT Rp300.000",
-  promoPrice: "Rp197.000",
-  originalPrice: "Rp497.000",
-  ctaLabel: "AMBIL PANDUAN (RP197.000)",
+  savingsBadge: "HEMAT Rp891.000",
+  promoPrice: "Rp297.000",
+  originalPrice: "Rp1.188.000",
+  ctaLabel: "AMBIL PANDUAN (RP297.000)",
   ctaHref: "#order",
+};
+
+export const TESTIMONIALS_CONTENT = {
+  eyebrow: "💬 Buktinya? Kata Mereka.",
+  headline: "Cerita dari yang sudah pakai KitabCuan",
+  images: [
+    "/testimonials/1.png",
+    "/testimonials/2.png",
+    "/testimonials/3.png",
+    "/testimonials/4.png",
+    "/testimonials/5.png",
+    "/testimonials/6.png",
+    "/testimonials/7.png",
+  ],
 };
 
 export type PaymentMethod = { value: string; label: string; icon: IconName };
@@ -335,6 +580,13 @@ export const ORDER_FORM_CONTENT = {
     { value: "shopeepay", label: "ShopeePay" },
     { value: "gopay", label: "GoPay" },
   ],
+  summaryTitle: "Rincian Pesanan",
+  summaryItems: [
+    { label: "Paket Usaha Sumber Cuan", note: "Akses selamanya + semua bonus", value: "Rp497.000", isDiscount: false },
+    { label: "Diskon Spesial Hari Ini", note: "", value: "-Rp300.000", isDiscount: true },
+  ],
+  totalLabel: "Total Bayar",
+  totalValue: "Rp197.000",
   submitLabel: "Kirim & Amankan Kitab",
   successMessage:
     "Pendaftaran berhasil! Tim kami akan menghubungi kamu lewat WhatsApp untuk konfirmasi pembayaran dan kirim akses kitabnya.",

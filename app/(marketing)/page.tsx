@@ -1,12 +1,16 @@
 import type { Metadata } from "next";
 import { Hero } from "@/components/sections/hero";
+import { Testimonials } from "@/components/sections/testimonials";
 import { PainPoints } from "@/components/sections/pain-points";
-import { WhyNow } from "@/components/sections/why-now";
-import { ProductContents } from "@/components/sections/product-contents";
+import { Solution } from "@/components/sections/solution";
+import { Audience } from "@/components/sections/audience";
+import { Bridge } from "@/components/sections/bridge";
+import { ProductReveal } from "@/components/sections/product-reveal";
+import { Imagine } from "@/components/sections/imagine";
+import { MainReason } from "@/components/sections/main-reason";
 import { Bonus } from "@/components/sections/bonus";
-import { Pricing } from "@/components/sections/pricing";
+import { FinalOffer } from "@/components/sections/final-offer";
 import { Faq } from "@/components/sections/faq";
-import { FinalCta } from "@/components/sections/final-cta";
 import { OrderForm } from "@/components/sections/order-form";
 import { PurchaseNotification } from "@/components/tools/purchase-notification";
 import { SITE_CONFIG } from "@/lib/constants";
@@ -22,13 +26,17 @@ export default function MarketingHomePage() {
   return (
     <main>
       <Hero />
+      <Testimonials />
       <PainPoints />
-      <WhyNow />
-      <ProductContents />
-      <Bonus />
-      <Pricing />
+      <Solution />
+      <Audience />
+      <Bridge />
+      <ProductReveal />
+      <Imagine />
+      <MainReason />
       <Faq />
-      <FinalCta />
+      <Bonus />
+      <FinalOffer />
       <OrderForm />
       <PurchaseNotification />
     </main>

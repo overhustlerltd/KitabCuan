@@ -1,13 +1,12 @@
 "use client";
 
 import { motion, type Variants } from "framer-motion";
-import { Users } from "lucide-react";
+import { Sparkles, X } from "lucide-react";
 import { PAIN_POINTS_CONTENT } from "@/lib/constants";
-import { ICON_MAP } from "@/lib/icons";
 
 const container: Variants = {
   hidden: {},
-  visible: { transition: { staggerChildren: 0.1 } },
+  visible: { transition: { staggerChildren: 0.09 } },
 };
 
 const fadeInUp: Variants = {
@@ -18,66 +17,51 @@ const fadeInUp: Variants = {
 export function PainPoints() {
   return (
     <section className="bg-muted/40">
-      <div className="mx-auto max-w-6xl px-4 py-16 md:px-8 md:py-24">
-        <motion.div
-          variants={container}
+      <div className="mx-auto max-w-3xl px-4 py-16 md:px-8 md:py-24">
+        <motion.h2
           initial="hidden"
           whileInView="visible"
-          viewport={{ once: true, amount: 0.4 }}
-          className="mx-auto flex max-w-2xl flex-col gap-4 text-center"
+          viewport={{ once: true, amount: 0.5 }}
+          variants={fadeInUp}
+          className="text-center font-heading text-3xl font-extrabold uppercase tracking-tight text-foreground sm:text-4xl"
         >
-          <motion.h2
-            variants={fadeInUp}
-            className="font-heading text-3xl font-bold tracking-tight text-foreground sm:text-4xl"
-          >
-            {PAIN_POINTS_CONTENT.headline}
-          </motion.h2>
-          <motion.p variants={fadeInUp} className="text-lg text-neutral-600 dark:text-neutral-400">
-            {PAIN_POINTS_CONTENT.subheadline}
-          </motion.p>
-        </motion.div>
+          {PAIN_POINTS_CONTENT.headline}
+        </motion.h2>
 
-        <motion.div
+        <motion.ul
           variants={container}
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true, amount: 0.2 }}
-          className="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-4"
+          className="mx-auto mt-10 flex max-w-2xl flex-col gap-3"
         >
-          {PAIN_POINTS_CONTENT.points.map((point) => {
-            const Icon = ICON_MAP[point.icon];
-            return (
-              <motion.div
-                key={point.title}
-                variants={fadeInUp}
-                className="flex flex-col gap-4 rounded-2xl border border-border bg-card p-6 shadow-sm"
-              >
-                <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-primary/10 text-primary">
-                  <Icon className="h-5 w-5" />
-                </div>
-                <h3 className="font-heading text-lg font-semibold text-card-foreground">{point.title}</h3>
-                <p className="text-sm text-neutral-600 dark:text-neutral-400">{point.description}</p>
-              </motion.div>
-            );
-          })}
-        </motion.div>
+          {PAIN_POINTS_CONTENT.points.map((point) => (
+            <motion.li
+              key={point}
+              variants={fadeInUp}
+              className="flex items-center gap-4 rounded-2xl border border-red-200/70 bg-card p-4 shadow-sm dark:border-red-900/40 sm:p-5"
+            >
+              <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-red-500 text-white shadow-sm ring-2 ring-red-500/20">
+                <X className="h-5 w-5" strokeWidth={3} />
+              </span>
+              <p className="text-base font-semibold italic text-foreground sm:text-lg">
+                &ldquo;{point}&rdquo;
+              </p>
+            </motion.li>
+          ))}
+        </motion.ul>
 
         <motion.div
-          variants={fadeInUp}
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true, amount: 0.6 }}
-          className="mx-auto mt-8 flex max-w-xl items-center gap-4 rounded-2xl border border-primary-200 bg-primary/5 p-5 dark:border-primary-900"
+          variants={fadeInUp}
+          className="mx-auto mt-8 flex max-w-2xl items-center justify-center gap-3 rounded-2xl bg-gradient-to-r from-primary-500 to-primary-600 px-6 py-5 text-center shadow-glow-accent"
         >
-          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-primary/15 text-primary">
-            <Users className="h-5 w-5" />
-          </div>
-          <div>
-            <p className="text-sm font-semibold text-foreground">{PAIN_POINTS_CONTENT.reassurance.title}</p>
-            <p className="text-sm text-neutral-600 dark:text-neutral-400">
-              {PAIN_POINTS_CONTENT.reassurance.description}
-            </p>
-          </div>
+          <Sparkles className="h-6 w-6 shrink-0 text-accent-200" />
+          <p className="font-heading text-lg font-extrabold text-primary-50 sm:text-xl">
+            {PAIN_POINTS_CONTENT.closing}
+          </p>
         </motion.div>
       </div>
     </section>

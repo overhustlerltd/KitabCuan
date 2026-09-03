@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import { Plus_Jakarta_Sans, Inter } from "next/font/google";
 import { SITE_CONFIG } from "@/lib/constants";
 import { Navbar } from "@/components/sections/navbar";
-import { Footer } from "@/components/sections/footer";
 import { ChatWidget } from "@/components/tools/chat-widget";
 import "./globals.css";
 
@@ -46,7 +45,6 @@ export default function RootLayout({
       >
         <Navbar />
         <div className="flex-1">{children}</div>
-        <Footer />
         <ChatWidget />
       </body>
     </html>

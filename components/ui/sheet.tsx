@@ -58,7 +58,7 @@ export function SheetContent({ open, onClose, children, className }: SheetConten
           role="dialog"
           aria-modal="true"
           className={cn(
-            "fixed inset-y-0 right-0 z-50 flex h-full w-full max-w-xs flex-col gap-6 bg-background p-6 shadow-xl",
+            "fixed inset-y-0 right-0 z-50 flex h-full w-full max-w-xs flex-col gap-6 border-l border-neutral-200 bg-white p-6 text-neutral-900 shadow-2xl",
             className,
           )}
           initial={{ x: "100%" }}

@@ -26,10 +26,10 @@ export function Pricing() {
           <div className="flex flex-col items-center justify-center gap-1 bg-gradient-to-r from-red-600 via-amber-600 to-red-600 px-6 py-4 text-center text-white">
             <span className="flex items-center gap-2 font-heading text-lg font-black uppercase tracking-wider text-amber-200">
               <Flame className="h-5 w-5 text-amber-200" />
-              PROMO DISKON 70% KHUSUS HARI INI
+              PROMO DISKON 75% KHUSUS HARI INI
             </span>
             <span className="rounded-full bg-white/20 px-3 py-0.5 text-xs font-extrabold tracking-wide text-white">
-              {PRICING_CONTENT.savingsText} — CUMA DENGAN RP149.000
+              {PRICING_CONTENT.savingsText} — CUMA DENGAN Rp297.000
             </span>
           </div>
 
@@ -47,7 +47,7 @@ export function Pricing() {
                 </span>
                 <span className="inline-flex items-center gap-1 rounded-lg bg-red-600 px-3 py-1 text-sm font-black text-white shadow-sm">
                   <Tag className="h-4 w-4" />
-                  DISKON 70%
+                  DISKON 75%
                 </span>
               </div>
 
