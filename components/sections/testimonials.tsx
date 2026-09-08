@@ -16,16 +16,21 @@ export function Testimonials() {
     el.scrollBy({ left: dir * amount, behavior: "smooth" });
   };
 
-  // Auto-slide ke kanan (loop), berhenti saat pengguna berinteraksi/hover.
+  // Auto-slide ke kanan (marquee kontinu via rAF), berhenti saat hover/sentuh.
   useEffect(() => {
     const el = scrollerRef.current;
     if (!el) return;
 
     let paused = false;
+    let pos = el.scrollLeft;
+    let raf = 0;
+    const SPEED = 0.7; // px per frame (~42px/detik)
+
     const pause = () => {
       paused = true;
     };
     const resume = () => {
+      pos = el.scrollLeft; // sync setelah interaksi manual
       paused = false;
     };
     el.addEventListener("pointerenter", pause);
@@ -33,19 +38,19 @@ export function Testimonials() {
     el.addEventListener("touchstart", pause, { passive: true });
     el.addEventListener("touchend", resume, { passive: true });
 
-    const id = window.setInterval(() => {
-      if (paused) return;
-      const card = el.querySelector<HTMLElement>("[data-card]");
-      const amount = card ? card.offsetWidth + 24 : el.clientWidth * 0.8;
-      if (el.scrollLeft + el.clientWidth >= el.scrollWidth - 8) {
-        el.scrollTo({ left: 0, behavior: "smooth" });
-      } else {
-        el.scrollBy({ left: amount, behavior: "smooth" });
+    const step = () => {
+      const max = el.scrollWidth - el.clientWidth;
+      if (!paused && max > 1) {
+        pos += SPEED;
+        if (pos >= max) pos = 0;
+        el.scrollLeft = pos;
       }
-    }, 3200);
+      raf = requestAnimationFrame(step);
+    };
+    raf = requestAnimationFrame(step);
 
     return () => {
-      window.clearInterval(id);
+      cancelAnimationFrame(raf);
       el.removeEventListener("pointerenter", pause);
       el.removeEventListener("pointerleave", resume);
       el.removeEventListener("touchstart", pause);
@@ -89,7 +94,7 @@ export function Testimonials() {
 
           <div
             ref={scrollerRef}
-            className="flex snap-x snap-mandatory items-start gap-6 overflow-x-auto scroll-smooth pb-4 [-ms-overflow-style:none] [scrollbar-width:none] md:px-14 [&::-webkit-scrollbar]:hidden"
+            className="flex items-start gap-6 overflow-x-auto pb-4 [-ms-overflow-style:none] [scrollbar-width:none] md:px-14 [&::-webkit-scrollbar]:hidden"
           >
             {TESTIMONIALS_CONTENT.images.map((src, i) => (
               <div
