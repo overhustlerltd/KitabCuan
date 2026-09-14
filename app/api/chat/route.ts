@@ -59,7 +59,6 @@ export async function POST(request: Request) {
   const claudeStream = anthropic.messages.stream({
     model: CLAUDE_MODEL,
     max_tokens: 1024,
-    output_config: { effort: "medium" },
     system: SYSTEM_PROMPT,
     messages: parsed.messages.map((m) => ({ role: m.role, content: m.content })),
   });

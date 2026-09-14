@@ -82,8 +82,6 @@ export async function POST(request: Request) {
     const message = await anthropic.messages.create({
       model: CLAUDE_MODEL,
       max_tokens: 4096,
-      thinking: { type: "disabled" },
-      output_config: { effort: "low" },
       system: SYSTEM_PROMPT,
       messages: [{ role: "user", content: userPrompt }],
     });

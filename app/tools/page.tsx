@@ -1,27 +1,44 @@
 import Link from "next/link";
 import type { Metadata } from "next";
+import { cookies } from "next/headers";
 import { ArrowLeft, Sparkles } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { TOOLS_PAGE_CONTENT } from "@/lib/constants";
 import { ICON_MAP } from "@/lib/icons";
+import { verifyAccess } from "@/lib/access-token";
+import { ToolsGate } from "@/components/tools/tools-gate";
 import { RencanaMenuForm } from "@/components/tools/rencana-menu-form";
 import { KalkulatorHppForm } from "@/components/tools/kalkulator-hpp-form";
 import { TulisanPromosiForm } from "@/components/tools/tulisan-promosi-form";
 import { NamaUsahaForm } from "@/components/tools/nama-usaha-form";
 import { ChatAssistant } from "@/components/tools/chat-assistant";
 
+export const dynamic = "force-dynamic";
+
 export const metadata: Metadata = {
   title: "Tools AI Dapur",
   description: TOOLS_PAGE_CONTENT.subtitle,
+  robots: { index: false, follow: false },
   openGraph: {
     title: "Tools AI Dapur | KitabCuan",
     description: TOOLS_PAGE_CONTENT.subtitle,
   },
 };
 
-export default function ToolsPage() {
+export default function ToolsPage({
+  searchParams,
+}: {
+  searchParams: { locked?: string; err?: string };
+}) {
+  const token = cookies().get("kc_akses")?.value;
+  const unlocked = Boolean(verifyAccess(token));
+
+  if (!unlocked) {
+    return <ToolsGate initialError={searchParams.err === "1"} />;
+  }
+
   return (
     <main className="min-h-screen bg-background text-foreground">
       <div className="mx-auto max-w-5xl px-4 py-10 md:px-8 md:py-14">

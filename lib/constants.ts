@@ -565,21 +565,12 @@ export const TESTIMONIALS_CONTENT = {
   ],
 };
 
-export type PaymentMethod = { value: string; label: string; icon: IconName };
-
 export const ORDER_FORM_CONTENT = {
   headline: "Amankan Kitabmu Sekarang",
-  description: "Isi datanya, kami kirim akses kitabnya begitu pembayaran dikonfirmasi.",
-  paymentMethods: [
-    { value: "bca", label: "Bank Central Asia" },
-    { value: "qris", label: "QRIS" },
-    { value: "bri", label: "BRI Virtual Account" },
-    { value: "mandiri", label: "Bank Mandiri Virtual Account" },
-    { value: "bni", label: "BNI Virtual Account" },
-    { value: "dana", label: "Dana" },
-    { value: "shopeepay", label: "ShopeePay" },
-    { value: "gopay", label: "GoPay" },
-  ],
+  description:
+    "Isi datamu, lalu lanjut ke halaman pembayaran aman. Begitu pembayaran berhasil, akses kitab + tools AI otomatis dikirim ke emailmu.",
+  paymentNote:
+    "Pembayaran diproses aman lewat DurianPay. Metode kamu pilih di halaman berikutnya.",
   summaryTitle: "Rincian Pesanan",
   summaryItems: [
     { label: "Paket Usaha Sumber Cuan", note: "Akses selamanya + semua bonus", value: "Rp497.000", isDiscount: false },
@@ -587,9 +578,20 @@ export const ORDER_FORM_CONTENT = {
   ],
   totalLabel: "Total Bayar",
   totalValue: "Rp197.000",
-  submitLabel: "Kirim & Amankan Kitab",
-  successMessage:
-    "Pendaftaran berhasil! Tim kami akan menghubungi kamu lewat WhatsApp untuk konfirmasi pembayaran dan kirim akses kitabnya.",
+  submitLabel: "Lanjut ke Pembayaran",
+  errorMessage: "Gagal membuka halaman pembayaran. Cek koneksi lalu coba lagi ya.",
+};
+
+export const TOOLS_LOCKED_CONTENT = {
+  badge: "🔒 Khusus Pembeli",
+  title: "Tools AI ini khusus pembeli KitabCuan",
+  subtitle:
+    "Buka lewat link yang kami kirim ke emailmu setelah pembayaran berhasil. Sudah beli tapi belum dapat akses? Tempel kode akses dari email di bawah.",
+  inputPlaceholder: "Tempel kode akses dari email",
+  submitLabel: "Buka Tools",
+  errorMessage: "Kode akses tidak valid atau sudah kedaluwarsa. Cek email atau hubungi admin.",
+  ctaBuyLabel: "Belum punya? Ambil KitabCuan",
+  ctaBuyHref: "/#order",
 };
 
 export type ToolTab = {
