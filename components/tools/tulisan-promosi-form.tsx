@@ -119,17 +119,17 @@ export function TulisanPromosiForm() {
 
         <Button type="submit" variant="primary" size="lg" disabled={isLoading} className="mt-2">
           {isLoading ? (
-            "Sedang meracik caption makanan..."
+            "Sedang membuat caption promosi..."
           ) : (
             <>
               <Sparkles className="h-4 w-4" />
-              Buatkan Caption Makanan Saya
+              Buatkan Caption Promosi Saya
             </>
           )}
         </Button>
       </form>
 
-      {isLoading && <ToolLoadingState message="Sedang meracik caption makanan..." />}
+      {isLoading && <ToolLoadingState message="Sedang membuat caption promosi..." />}
 
       {!isLoading && error && (
         <ToolErrorState message={error} onRetry={() => lastValues && generate(lastValues)} />

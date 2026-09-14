@@ -18,11 +18,11 @@ import { ChatAssistant } from "@/components/tools/chat-assistant";
 export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
-  title: "Tools AI Dapur",
+  title: "Tools AI",
   description: TOOLS_PAGE_CONTENT.subtitle,
   robots: { index: false, follow: false },
   openGraph: {
-    title: "Tools AI Dapur | KitabCuan",
+    title: "Tools AI | KitabCuan",
     description: TOOLS_PAGE_CONTENT.subtitle,
   },
 };

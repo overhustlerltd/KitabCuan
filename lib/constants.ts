@@ -1,9 +1,9 @@
 export const SITE_CONFIG = {
   name: "KitabCuan",
   nameParts: { first: "Kitab", second: "Cuan" },
-  tagline: "Resep cuan dari dapur rumahmu",
+  tagline: "Panduan lengkap membangun bisnis dari nol",
   description:
-    "KitabCuan adalah panduan digital lengkap buat kamu yang mau hasilkan uang dari masak-masakan di rumah — mulai dari pilih menu yang laku, hitung HPP, sampai promosi di medsos, semua dibedah tuntas dengan tools AI pendamping.",
+    "KitabCuan adalah panduan digital lengkap buat kamu yang mau mulai dan mengembangkan bisnis dari nol — 100+ ide bisnis, sistem jualan, strategi marketing, template siap pakai, dan tools AI pendamping, semua dalam satu paket.",
 };
 
 export type NavLink = {
@@ -13,13 +13,12 @@ export type NavLink = {
 
 export const NAV_LINKS: NavLink[] = [
   { label: "Beranda", href: "/" },
-  { label: "Isi Kitab", href: "/#isi-kitab" },
+  { label: "Isi Kitab", href: "/#produk" },
   { label: "Bonus", href: "/#bonus" },
-  { label: "Harga", href: "/#harga" },
   { label: "FAQ", href: "/#faq" },
 ];
 
-export const TOOLS_NAV_LINK: NavLink = { label: "Tools AI Dapur", href: "/tools" };
+export const TOOLS_NAV_LINK: NavLink = { label: "Tools AI", href: "/tools" };
 
 export const FOOTER_LINK_GROUPS: { title: string; links: NavLink[] }[] = [
   {
@@ -407,26 +406,26 @@ export const PRODUCT_CONTENTS_CONTENT = {
 export const BONUS_CONTENT = {
   eyebrow: "Bonus Eksklusif",
   headline: "Nggak Cuma Panduannya, Ini Ikut Kamu Bawa Pulang",
-  subheadline: "Semua bonus di bawah otomatis masuk begitu kamu ambil panduannya hari ini.",
+  subheadline: "Semua bonus di bawah otomatis kamu dapat begitu ambil paketnya hari ini.",
   items: [
     {
       icon: "Users" as IconName,
-      title: "Grup diskusi pejuang dapur cuan",
+      title: "Akses grup komunitas pebisnis KitabCuan",
       value: "Rp150.000",
     },
     {
       icon: "FileText" as IconName,
-      title: "50+ template caption & foto makanan",
+      title: "48+ template desain marketing siap edit",
       value: "Rp100.000",
     },
     {
       icon: "Image" as IconName,
-      title: "Panduan foto makanan yang menggoda selera",
+      title: "Panduan konten & jualan online",
       value: "Rp75.000",
     },
     {
       icon: "MessageSquareText" as IconName,
-      title: "Sesi tanya jawab live resep & strategi jualan",
+      title: "Sesi tanya jawab strategi bisnis",
       value: "Rp200.000",
     },
   ],
@@ -465,29 +464,29 @@ export const FAQ_CONTENT = {
   subheadline: "Kalau masih ada yang mengganjal, mudah-mudahan sudah terjawab di sini.",
   items: [
     {
-      question: "Aku bisa masak tapi nggak punya pengalaman bisnis, cocok nggak?",
+      question: "Aku pemula dan belum punya pengalaman bisnis, cocok nggak?",
       answer:
-        "Justru kamu yang paling disasar. Panduan ini dimulai dari titik paling awal, dari cara pilih menu yang laku sampai cara dapat pembeli pertama, semuanya dijelaskan step by step tanpa asumsi kamu sudah paham bisnis.",
+        "Justru kamu yang paling disasar. Panduan ini dimulai dari titik paling awal, dari cara pilih ide bisnis sampai cara dapat pembeli pertama, semuanya dijelaskan step by step tanpa asumsi kamu sudah paham bisnis.",
     },
     {
-      question: "Butuh modal berapa buat mulai jualan makanan rumahan?",
+      question: "Butuh modal berapa buat mulai bisnisnya?",
       answer:
-        "Banyak menu yang bisa dimulai dengan modal Rp100.000–300.000 saja. Di panduan ada kalkulator HPP yang bantu kamu hitung modal dan harga jual yang pas, jadi kamu tahu persis berapa yang dibutuhkan sebelum mulai.",
+        "Banyak ide bisnis di dalamnya yang bisa dimulai dengan modal kecil, bahkan ada yang nyaris tanpa modal. Ada juga kalkulator simulasi profit yang bantu kamu hitung modal dan estimasi keuntungan, jadi kamu tahu persis berapa yang dibutuhkan sebelum mulai.",
     },
     {
       question: "Aksesnya berlaku sampai kapan?",
       answer:
-        "Selamanya, cukup sekali bayar. Kalau nanti ada edisi atau materi tambahan tentang tren kuliner terbaru, kamu otomatis dapat tanpa perlu bayar lagi.",
+        "Selamanya, cukup sekali bayar. Kalau nanti ada edisi atau materi tambahan, kamu otomatis dapat update tanpa perlu bayar lagi.",
     },
     {
-      question: "Bedanya apa sama konten memasak gratis di YouTube atau Instagram?",
+      question: "Bedanya apa sama konten bisnis gratis di YouTube atau Instagram?",
       answer:
-        "Konten gratis biasanya fokus pada resep, bukan bisnis. Di sini kamu dapat panduan lengkap soal hitung HPP, strategi harga, cara foto makanan yang menggoda, sampai cara jualan di medsos, semuanya dalam satu alur yang rapi.",
+        "Konten gratis biasanya sepotong-sepotong dan bikin bingung mau mulai dari mana. Di sini kamu dapat panduan lengkap yang terstruktur, plus template dan tools AI siap pakai, semuanya dalam satu alur yang rapi dari nol sampai jalan.",
     },
     {
       question: "Panduannya dikirim gimana? Ada buku fisiknya?",
       answer:
-        "Semuanya berbentuk digital dan langsung bisa dibuka begitu pembayaran dikonfirmasi. Nggak perlu tunggu paket, bisa langsung baca hari itu juga dari HP, laptop, atau tablet kamu.",
+        "Semuanya berbentuk digital dan langsung bisa dibuka begitu pembayaran berhasil. Nggak perlu tunggu paket, bisa langsung dipelajari hari itu juga dari HP, laptop, atau tablet kamu.",
     },
   ] as FaqItem[],
 };
@@ -603,46 +602,46 @@ export type ToolTab = {
 };
 
 export const TOOLS_PAGE_CONTENT = {
-  badge: "Tools AI Dapur Eksklusif",
+  badge: "Tools AI Eksklusif",
   title: "Tools AI Pendamping KitabCuan",
   subtitle:
-    "Lima asisten AI khusus bisnis kuliner rumahan — bantu kamu susun rencana menu, hitung HPP, bikin caption makanan, cari nama brand, sampai tanya langsung ke mentor dapur.",
+    "Lima asisten AI untuk bantu kamu bangun bisnis — susun rencana jualan, hitung modal & profit, bikin caption promosi, cari nama brand, sampai tanya langsung ke mentor bisnis.",
   backLabel: "Kembali ke Beranda",
   tabs: [
     {
       value: "rencana-menu",
-      label: "Rencana Menu",
+      label: "Rencana Jualan",
       icon: "ClipboardList" as IconName,
-      cardTitle: "Susun Rencana Menu Jualan 7 Hari",
-      cardDescription: "Isi form di bawah, biar AI susunin menu harian yang laku dan cocok buat dapurmu.",
+      cardTitle: "Susun Rencana Jualan 7 Hari",
+      cardDescription: "Isi form di bawah, biar AI susunin rencana jualan harian yang tinggal kamu jalanin.",
     },
     {
       value: "kalkulator-hpp",
-      label: "Kalkulator HPP",
+      label: "Kalkulator Profit",
       icon: "Calculator" as IconName,
-      cardTitle: "Hitung HPP & Harga Jual yang Pas",
-      cardDescription: "Masukkan bahan-bahan dan biaya operasional, AI bantu hitung harga jual yang untung dan tetap kompetitif.",
+      cardTitle: "Hitung Modal, HPP & Harga Jual",
+      cardDescription: "Masukkan komponen biaya produkmu, AI bantu hitung harga jual yang untung dan tetap kompetitif.",
     },
     {
       value: "tulisan-promosi",
-      label: "Caption Makanan",
+      label: "Caption Promosi",
       icon: "PenLine" as IconName,
-      cardTitle: "Bikin Caption Makanan yang Menggoda",
+      cardTitle: "Bikin Caption Promosi yang Menjual",
       cardDescription: "Caption Instagram, status WA, sampai template chat pembeli — semua otomatis dibuatkan.",
     },
     {
       value: "nama-brand",
       label: "Nama Brand",
       icon: "Tag" as IconName,
-      cardTitle: "Cari Nama Brand Kuliner yang Nempel",
-      cardDescription: "Bingung mau kasih nama apa buat usaha masakanmu? Biar AI kasih beberapa pilihan plus taglinenya.",
+      cardTitle: "Cari Nama Brand yang Nempel",
+      cardDescription: "Bingung mau kasih nama apa buat usahamu? Biar AI kasih beberapa pilihan plus taglinenya.",
     },
     {
       value: "tanya-mentor",
       label: "Tanya Mentor",
       icon: "MessageCircle" as IconName,
-      cardTitle: "Tanya Langsung ke Mentor Dapur AI",
-      cardDescription: "Tanya apa aja soal modal, resep yang laku, strategi harga, atau cara promosi makanan rumahan.",
+      cardTitle: "Tanya Langsung ke Mentor Bisnis AI",
+      cardDescription: "Tanya apa aja soal modal, ide bisnis, strategi harga, atau cara promosi usahamu.",
     },
   ] as ToolTab[],
 };

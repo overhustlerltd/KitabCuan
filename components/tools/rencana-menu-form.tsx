@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { ChefHat } from "lucide-react";
+import { ClipboardList } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Select } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
@@ -13,7 +13,7 @@ import { ResultCard } from "@/components/tools/result-card";
 import { ToolErrorState, ToolLoadingState } from "@/components/tools/tool-status";
 
 const formSchema = z.object({
-  jenisMenuUtama: z.string().trim().min(2, "Ceritakan dulu kamu mau jualan makanan apa"),
+  jenisMenuUtama: z.string().trim().min(2, "Ceritakan dulu kamu mau jualan apa"),
   segmentPasar: z.enum(["keluarga-rumahan", "anak-muda", "kantoran", "semua"], {
     message: "Pilih segmen pasar kamu",
   }),
@@ -58,7 +58,7 @@ export function RencanaMenuForm() {
       if (!res.ok) throw new Error(json.error ?? "Terjadi kesalahan.");
       setResult(json.data);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Gagal menyusun rencana menu.");
+      setError(err instanceof Error ? err.message : "Gagal menyusun rencana jualan.");
     } finally {
       setIsLoading(false);
     }
@@ -68,7 +68,7 @@ export function RencanaMenuForm() {
     ? result.days
         .map(
           (d) =>
-            `Hari ${d.day}: ${d.title}\nMenu: ${d.menu.join(", ")}\nTips: ${d.tips}`,
+            `Hari ${d.day}: ${d.title}\nProduk/Fokus: ${d.menu.join(", ")}\nTips: ${d.tips}`,
         )
         .join("\n\n")
     : "";
@@ -78,11 +78,11 @@ export function RencanaMenuForm() {
       <form onSubmit={handleSubmit(generate)} className="flex flex-col gap-4">
         <div className="flex flex-col gap-1.5">
           <label htmlFor="jenisMenuUtama" className="text-sm font-medium text-foreground">
-            Kamu mau jualan masakan apa?
+            Kamu mau jualan apa?
           </label>
           <Input
             id="jenisMenuUtama"
-            placeholder="Contoh: nasi box, kue kering, ayam geprek, minuman kekinian"
+            placeholder="Contoh: fashion online, skincare, jasa desain, makanan ringan"
             invalid={!!errors.jenisMenuUtama}
             {...register("jenisMenuUtama")}
           />
@@ -107,7 +107,7 @@ export function RencanaMenuForm() {
 
         <div className="flex flex-col gap-1.5">
           <label htmlFor="modalHarian" className="text-sm font-medium text-foreground">
-            Kisaran modal belanja per hari
+            Kisaran modal per hari
           </label>
           <Select
             id="modalHarian"
@@ -140,8 +140,8 @@ export function RencanaMenuForm() {
               Pilih cara jualan
             </option>
             <option value="wa-ig">WhatsApp & Instagram</option>
-            <option value="pesan-antar">Pesan antar / GoFood / ShopeeFood</option>
-            <option value="titip-warung">Titip di warung / kantin sekitar</option>
+            <option value="pesan-antar">Pesan antar / marketplace</option>
+            <option value="titip-warung">Titip / reseller / offline sekitar</option>
             <option value="semua">Semua cara sekaligus</option>
           </Select>
           {errors.canalJualan && <p className="text-xs text-red-500">{errors.canalJualan.message}</p>}
@@ -149,17 +149,17 @@ export function RencanaMenuForm() {
 
         <Button type="submit" variant="primary" size="lg" disabled={isLoading} className="mt-2">
           {isLoading ? (
-            "Sedang menyusun rencana menu..."
+            "Sedang menyusun rencana jualan..."
           ) : (
             <>
-              <ChefHat className="h-4 w-4" />
-              Buatkan Rencana Menu Saya
+              <ClipboardList className="h-4 w-4" />
+              Buatkan Rencana Jualan Saya
             </>
           )}
         </Button>
       </form>
 
-      {isLoading && <ToolLoadingState message="Sedang meracik rencana menu terbaik untukmu..." />}
+      {isLoading && <ToolLoadingState message="Sedang menyusun rencana jualan terbaik untukmu..." />}
 
       {!isLoading && error && (
         <ToolErrorState message={error} onRetry={() => lastValues && generate(lastValues)} />
@@ -168,7 +168,7 @@ export function RencanaMenuForm() {
       {!isLoading && !error && result && (
         <div className="flex flex-col gap-4">
           <div className="flex items-center justify-between">
-            <h3 className="font-heading text-lg font-semibold text-foreground">Rencana Menu 7 Hari Kamu</h3>
+            <h3 className="font-heading text-lg font-semibold text-foreground">Rencana Jualan 7 Hari Kamu</h3>
             <CopyButton text={fullPlanText} label="Salin Semua" />
           </div>
           <div className="grid gap-4 sm:grid-cols-2">
@@ -177,11 +177,11 @@ export function RencanaMenuForm() {
                 key={day.day}
                 title={day.title}
                 badge={day.day}
-                copyText={`Hari ${day.day}: ${day.title}\nMenu: ${day.menu.join(", ")}\nTips: ${day.tips}`}
+                copyText={`Hari ${day.day}: ${day.title}\nProduk/Fokus: ${day.menu.join(", ")}\nTips: ${day.tips}`}
               >
                 <div className="flex flex-col gap-2 text-sm text-neutral-600">
                   <div>
-                    <p className="mb-1 font-medium text-foreground">Menu:</p>
+                    <p className="mb-1 font-medium text-foreground">Produk/Fokus:</p>
                     <ul className="flex flex-col gap-1">
                       {day.menu.map((item, i) => (
                         <li key={i} className="flex gap-2">

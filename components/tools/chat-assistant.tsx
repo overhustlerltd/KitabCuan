@@ -8,10 +8,10 @@ import { Button } from "@/components/ui/button";
 type ChatMessage = { role: "user" | "assistant"; content: string };
 
 const QUICK_REPLIES = [
-  "Gimana cara hitung harga jual nasi box yang untung?",
-  "Modal Rp300 ribu bisa jualan makanan apa?",
-  "Tips foto makanan biar keliatan enak di HP?",
-  "Cara promosi jualan makanan di WhatsApp yang efektif?",
+  "Gimana cara nentuin harga jual yang untung?",
+  "Modal Rp300 ribu bisa mulai bisnis apa?",
+  "Cara dapat pembeli pertama gimana?",
+  "Cara promosi di WhatsApp yang efektif?",
 ];
 
 export function ChatAssistant({ className }: { className?: string }) {
@@ -122,7 +122,7 @@ export function ChatAssistant({ className }: { className?: string }) {
         <input
           value={input}
           onChange={(event) => setInput(event.target.value)}
-          placeholder="Tanya apa aja soal jualan makanan dan dapurmu..."
+          placeholder="Tanya apa aja soal bisnis dan usahamu..."
           className="h-11 flex-1 rounded-xl border border-border bg-background px-4 text-sm text-foreground placeholder:text-neutral-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
         />
         <Button type="submit" variant="primary" size="md" disabled={isStreaming || !input.trim()}>

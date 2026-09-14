@@ -30,26 +30,26 @@ const MODAL_LABEL: Record<string, string> = {
 
 const CANAL_LABEL: Record<string, string> = {
   "wa-ig": "WhatsApp & Instagram",
-  "pesan-antar": "pesan antar / GoFood / ShopeeFood",
-  "titip-warung": "titip di warung / kantin sekitar",
+  "pesan-antar": "pesan antar / marketplace",
+  "titip-warung": "titip / reseller / offline sekitar",
   semua: "semua cara sekaligus",
 };
 
-const SYSTEM_PROMPT = `Kamu adalah mentor bisnis kuliner rumahan dari KitabCuan — santai, hangat, dan selalu kasih saran yang praktis.
-Tugasmu: menyusun rencana menu jualan 7 hari untuk penjual makanan rumahan berdasarkan input pengguna.
+const SYSTEM_PROMPT = `Kamu adalah mentor bisnis dari KitabCuan — santai, hangat, dan selalu kasih saran yang praktis.
+Tugasmu: menyusun rencana jualan 7 hari untuk pelaku usaha berdasarkan input pengguna.
 
 ATURAN OUTPUT:
 - Balas HANYA dengan JSON valid, tanpa teks pembuka, tanpa penjelasan, tanpa markdown code fence.
 - Ikuti schema persis seperti ini:
 {
   "days": [
-    { "day": 1, "title": "tema/fokus hari itu", "menu": ["nama menu 1", "nama menu 2", "nama menu 3"], "tips": "tips spesifik untuk hari itu (promosi, packaging, dll)" }
+    { "day": 1, "title": "tema/fokus hari itu", "menu": ["produk/aktivitas jualan 1", "produk/aktivitas jualan 2", "produk/aktivitas jualan 3"], "tips": "tips spesifik untuk hari itu (promosi, konten, follow up, dll)" }
   ]
 }
 - Harus ada tepat 7 entri di "days", day 1 sampai 7.
-- Setiap hari punya 2-3 menu yang realistis dibuat dengan modal yang tersedia.
+- Setiap hari punya 2-3 item fokus (produk yang ditawarkan atau aktivitas jualan) yang realistis dengan modal yang tersedia.
 - Tips harus actionable dan spesifik (bukan saran umum seperti "promosikan produkmu").
-- Pertimbangkan variasi menu supaya tidak bosan tapi tetap efisien dari sisi bahan.
+- Sesuaikan dengan jenis usaha yang disebut pengguna, variasikan supaya tidak monoton tapi tetap efisien.
 - Gunakan Bahasa Indonesia santai sehari-hari, bukan bahasa formal.`;
 
 export async function POST(request: Request) {
@@ -72,10 +72,10 @@ export async function POST(request: Request) {
     );
   }
 
-  const userPrompt = `Buatkan rencana menu jualan 7 hari untuk usaha makanan rumahan berikut:
-- Jenis masakan yang dijual: ${parsedInput.jenisMenuUtama}
+  const userPrompt = `Buatkan rencana jualan 7 hari untuk usaha berikut:
+- Jenis usaha/produk yang dijual: ${parsedInput.jenisMenuUtama}
 - Target pembeli: ${SEGMENT_LABEL[parsedInput.segmentPasar]}
-- Modal belanja harian: ${MODAL_LABEL[parsedInput.modalHarian]}
+- Modal harian: ${MODAL_LABEL[parsedInput.modalHarian]}
 - Cara jualan: ${CANAL_LABEL[parsedInput.canalJualan]}`;
 
   try {

@@ -59,16 +59,16 @@ export async function POST(request: Request) {
       : 0;
 
   // Minta AI untuk analisis/rekomendasi singkat
-  const SYSTEM_PROMPT = `Kamu adalah konsultan bisnis kuliner rumahan dari KitabCuan — santai dan lugas.
+  const SYSTEM_PROMPT = `Kamu adalah konsultan bisnis dari KitabCuan — santai dan lugas.
 Berikan analisis singkat (2-3 kalimat, Bahasa Indonesia santai) berdasarkan data HPP yang diberikan.
 Sampaikan apakah harga jual sudah kompetitif, saran rounding harga agar lebih menarik (misal Rp15.000 lebih bagus dari Rp14.200), dan satu tips praktis untuk meningkatkan keuntungan.
 Balas HANYA dengan JSON: { "analisis": "teks analisis di sini" }. Tanpa teks lain, tanpa markdown code fence.`;
 
   const userPrompt = `Produk: ${parsedInput.namaProduk}
-HPP per porsi: Rp${hppPerPorsi}
+HPP per unit: Rp${hppPerPorsi}
 Harga jual rekomendasi (margin ${parsedInput.marginKeuntungan}%): Rp${hargaJualRekomendasi}
-Keuntungan per porsi: Rp${keuntunganPerPorsi}
-Jumlah porsi per batch: ${parsedInput.jumlahPorsi}`;
+Keuntungan per unit: Rp${keuntunganPerPorsi}
+Jumlah unit per batch: ${parsedInput.jumlahPorsi}`;
 
   try {
     const message = await anthropic.messages.create({

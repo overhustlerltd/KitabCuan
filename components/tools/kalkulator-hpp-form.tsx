@@ -22,7 +22,7 @@ const formSchema = z.object({
   biayaGas: z.coerce.number().nonnegative().optional().transform((v) => v ?? 0),
   biayaKemasan: z.coerce.number().nonnegative().optional().transform((v) => v ?? 0),
   biayaLainnya: z.coerce.number().nonnegative().optional().transform((v) => v ?? 0),
-  jumlahPorsi: z.coerce.number().min(1, "Minimal 1 porsi"),
+  jumlahPorsi: z.coerce.number().min(1, "Minimal 1 unit"),
   marginKeuntungan: z.coerce.number().min(1, "Minimal 1%").max(500, "Maksimal 500%"),
 });
 
@@ -102,10 +102,10 @@ export function KalkulatorHppForm() {
 Total Biaya Bahan: ${formatRupiah(result.totalBiayaBahan)}
 Total Biaya Operasional: ${formatRupiah(result.totalBiayaOperasional)}
 Total HPP: ${formatRupiah(result.totalHpp)}
-HPP per Porsi: ${formatRupiah(result.hppPerPorsi)}
+HPP per Unit: ${formatRupiah(result.hppPerPorsi)}
 Harga Jual Rekomendasi: ${formatRupiah(result.hargaJualRekomendasi)}
-Keuntungan per Porsi: ${formatRupiah(result.keuntunganPerPorsi)}
-Break-even (porsi/hari): ${result.breakEvenPorsi} porsi
+Keuntungan per Unit: ${formatRupiah(result.keuntunganPerPorsi)}
+Break-even (unit/hari): ${result.breakEvenPorsi} unit
 Analisis: ${result.analisis}`
     : "";
 
@@ -115,11 +115,11 @@ Analisis: ${result.analisis}`
         {/* Nama Produk */}
         <div className="flex flex-col gap-1.5">
           <label htmlFor="namaProduk" className="text-sm font-medium text-foreground">
-            Nama produk masakan
+            Nama produk
           </label>
           <Input
             id="namaProduk"
-            placeholder="Contoh: Nasi Goreng Spesial, Kue Brownies Kukus"
+            placeholder="Contoh: Kaos Polos, Paket Skincare, Jasa Desain"
             invalid={!!errors.namaProduk}
             {...register("namaProduk")}
           />
@@ -128,7 +128,7 @@ Analisis: ${result.analisis}`
 
         {/* Daftar Bahan */}
         <div className="flex flex-col gap-2">
-          <label className="text-sm font-medium text-foreground">Daftar bahan-bahan</label>
+          <label className="text-sm font-medium text-foreground">Bahan / komponen biaya</label>
           <div className="flex flex-col gap-2">
             {fields.map((field, index) => (
               <div key={field.id} className="flex items-start gap-2">
@@ -185,7 +185,7 @@ Analisis: ${result.analisis}`
           <div className="grid gap-3 sm:grid-cols-3">
             <div className="flex flex-col gap-1.5">
               <label htmlFor="biayaGas" className="text-xs text-neutral-500">
-                Biaya gas/listrik (Rp)
+                Biaya produksi/listrik (Rp)
               </label>
               <Input
                 id="biayaGas"
@@ -226,7 +226,7 @@ Analisis: ${result.analisis}`
         <div className="grid gap-4 sm:grid-cols-2">
           <div className="flex flex-col gap-1.5">
             <label htmlFor="jumlahPorsi" className="text-sm font-medium text-foreground">
-              Jumlah porsi / batch
+              Jumlah unit / batch
             </label>
             <Input
               id="jumlahPorsi"
@@ -285,7 +285,7 @@ Analisis: ${result.analisis}`
           {/* Highlight Cards */}
           <div className="grid gap-3 sm:grid-cols-3">
             <div className="flex flex-col gap-1 rounded-xl border border-border bg-card p-4">
-              <p className="text-xs text-neutral-500">HPP per Porsi</p>
+              <p className="text-xs text-neutral-500">HPP per Unit</p>
               <p className="font-heading text-2xl font-bold text-foreground">
                 {formatRupiah(result.hppPerPorsi)}
               </p>
@@ -297,7 +297,7 @@ Analisis: ${result.analisis}`
               </p>
             </div>
             <div className="flex flex-col gap-1 rounded-xl border border-primary/20 bg-primary/5 p-4">
-              <p className="text-xs text-primary/70">Keuntungan per Porsi</p>
+              <p className="text-xs text-primary/70">Keuntungan per Unit</p>
               <p className="font-heading text-2xl font-bold text-primary">
                 {formatRupiah(result.keuntunganPerPorsi)}
               </p>
@@ -329,7 +329,7 @@ Analisis: ${result.analisis}`
                 <tr>
                   <td className="py-2 text-neutral-500">Break-even harian</td>
                   <td className="py-2 text-right font-medium text-foreground">
-                    {result.breakEvenPorsi} porsi
+                    {result.breakEvenPorsi} unit
                   </td>
                 </tr>
               </tbody>

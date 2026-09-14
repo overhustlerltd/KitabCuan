@@ -14,13 +14,13 @@ type BuyerNotification = {
 };
 
 const SAMPLE_BUYERS: BuyerNotification[] = [
-  { id: 1, name: "Mustika", location: "Surabaya", product: "KitabCuan Resep Dapur", price: "Rp197.000", timeAgo: "12 menit yang lalu" },
-  { id: 2, name: "Ibu Rahmawati", location: "Bandung", product: "KitabCuan Resep Dapur", price: "Rp197.000", timeAgo: "18 menit yang lalu" },
-  { id: 3, name: "Siti Nurjanah", location: "Semarang", product: "KitabCuan Resep Dapur", price: "Rp197.000", timeAgo: "25 menit yang lalu" },
-  { id: 4, name: "Dewi Handayani", location: "Jakarta", product: "KitabCuan Resep Dapur", price: "Rp197.000", timeAgo: "34 menit yang lalu" },
-  { id: 5, name: "Ratna Sari", location: "Yogyakarta", product: "KitabCuan Resep Dapur", price: "Rp197.000", timeAgo: "42 menit yang lalu" },
-  { id: 6, name: "Tri Wahyuni", location: "Malang", product: "KitabCuan Resep Dapur", price: "Rp197.000", timeAgo: "47 menit yang lalu" },
-  { id: 7, name: "Maya Kartika", location: "Medan", product: "KitabCuan Resep Dapur", price: "Rp197.000", timeAgo: "53 menit yang lalu" },
+  { id: 1, name: "Mustika", location: "Surabaya", product: "Paket Usaha Sumber Cuan", price: "Rp197.000", timeAgo: "12 menit yang lalu" },
+  { id: 2, name: "Ibu Rahmawati", location: "Bandung", product: "Paket Usaha Sumber Cuan", price: "Rp197.000", timeAgo: "18 menit yang lalu" },
+  { id: 3, name: "Siti Nurjanah", location: "Semarang", product: "Paket Usaha Sumber Cuan", price: "Rp197.000", timeAgo: "25 menit yang lalu" },
+  { id: 4, name: "Dewi Handayani", location: "Jakarta", product: "Paket Usaha Sumber Cuan", price: "Rp197.000", timeAgo: "34 menit yang lalu" },
+  { id: 5, name: "Ratna Sari", location: "Yogyakarta", product: "Paket Usaha Sumber Cuan", price: "Rp197.000", timeAgo: "42 menit yang lalu" },
+  { id: 6, name: "Tri Wahyuni", location: "Malang", product: "Paket Usaha Sumber Cuan", price: "Rp197.000", timeAgo: "47 menit yang lalu" },
+  { id: 7, name: "Maya Kartika", location: "Medan", product: "Paket Usaha Sumber Cuan", price: "Rp197.000", timeAgo: "53 menit yang lalu" },
 ];
 
 export function PurchaseNotification() {
