@@ -13,8 +13,8 @@ export function ChatWidget() {
         <div className="flex h-[28rem] max-h-[70vh] w-[calc(100vw-2.5rem)] max-w-sm flex-col rounded-2xl border border-border bg-card p-4 shadow-2xl">
           <div className="mb-2 flex items-center justify-between">
             <div>
-              <p className="font-heading text-sm font-semibold text-foreground">Tanya Mentor Dapur</p>
-              <p className="text-xs text-neutral-500">Seputar HPP, menu, promosi makanan</p>
+              <p className="font-heading text-sm font-semibold text-foreground">Tanya Mentor Bisnis</p>
+              <p className="text-xs text-neutral-500">Seputar modal, ide bisnis, strategi jualan</p>
             </div>
             <button
               type="button"

@@ -3,6 +3,7 @@ import { Plus_Jakarta_Sans, Inter } from "next/font/google";
 import { SITE_CONFIG } from "@/lib/constants";
 import { Navbar } from "@/components/sections/navbar";
 import { ChatWidget } from "@/components/tools/chat-widget";
+import { MetaPixel } from "@/components/analytics/meta-pixel";
 import "./globals.css";
 
 const plusJakartaSans = Plus_Jakarta_Sans({
@@ -40,6 +41,7 @@ export default function RootLayout({
       <body
         className={`${plusJakartaSans.variable} ${inter.variable} flex min-h-screen flex-col font-body antialiased`}
       >
+        <MetaPixel />
         <Navbar />
         <div className="flex-1">{children}</div>
         <ChatWidget />

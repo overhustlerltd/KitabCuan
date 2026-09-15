@@ -13,6 +13,7 @@ import { FinalOffer } from "@/components/sections/final-offer";
 import { Faq } from "@/components/sections/faq";
 import { OrderForm } from "@/components/sections/order-form";
 import { PurchaseNotification } from "@/components/tools/purchase-notification";
+import { PixelEvent } from "@/components/analytics/meta-pixel";
 import { SITE_CONFIG } from "@/lib/constants";
 
 export const metadata: Metadata = {
@@ -25,6 +26,7 @@ export const metadata: Metadata = {
 export default function MarketingHomePage() {
   return (
     <main>
+      <PixelEvent event="ViewContent" params={{ content_name: "KitabCuan", content_category: "ebook" }} />
       <Hero />
       <Testimonials />
       <PainPoints />

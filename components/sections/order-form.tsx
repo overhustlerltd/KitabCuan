@@ -21,6 +21,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { ORDER_FORM_CONTENT } from "@/lib/constants";
+import { trackFb } from "@/components/analytics/meta-pixel";
 
 const SUPPORTED_METHODS: { svg: string; label: string }[] = [
   { svg: QrisSvg, label: "QRIS" },
@@ -83,6 +84,8 @@ export function OrderForm() {
         paymentUrl?: string;
       };
       if (res.ok && json.ok && json.paymentUrl) {
+        trackFb("Lead", { content_name: "KitabCuan", currency: "IDR", value: 197000 });
+        trackFb("InitiateCheckout", { content_name: "KitabCuan", currency: "IDR", value: 197000 });
         setRedirecting(true);
         window.location.href = json.paymentUrl;
         return;
