@@ -57,6 +57,13 @@ export function deliveryEmailHtml(params: {
       <p style="margin:0 0 8px;font-weight:bold">🤖 Tools AI (khusus pembeli)</p>
       <a href="${params.toolsUrl}" style="display:inline-block;padding:12px 20px;background:#c9821f;color:#fff;text-decoration:none;border-radius:10px;font-weight:bold">Buka Tools AI</a>
     </div>
+    <div style="margin:0 0 18px;padding:14px 16px;border:1px dashed #d8dccb;border-radius:12px;background:#fbfcf8">
+      <p style="margin:0 0 10px;font-size:12px;color:#6a7358">Kalau tombol di atas tidak bisa dibuka, salin & tempel link ini ke browser:</p>
+      <p style="margin:0 0 4px;font-size:12px;color:#18221b"><strong>📕 Folder Produk:</strong></p>
+      <p style="margin:0 0 12px;font-size:12px;word-break:break-all;color:#47632B">${params.driveUrl}</p>
+      <p style="margin:0 0 4px;font-size:12px;color:#18221b"><strong>🤖 Tools AI:</strong></p>
+      <p style="margin:0;font-size:12px;word-break:break-all;color:#47632B">${params.toolsUrl}</p>
+    </div>
     <p style="color:#6a7358;font-size:13px">Simpan email ini. Link Tools AI di atas adalah kunci akses pribadimu — jangan dibagikan ke orang lain ya.</p>
     <p style="color:#6a7358;font-size:13px">Ada kendala akses? Balas email ini.</p>
   </div>`;
