@@ -20,6 +20,8 @@ export type CreateOrderInput = {
   orderRefId: string;
   customer: { name: string; email: string; mobile: string };
   expiryMinutes?: number;
+  // Data attribution Meta (disimpan di metadata order, dipakai CAPI di webhook).
+  tracking?: { fbp?: string; fbc?: string; clientIp?: string; userAgent?: string };
 };
 
 export type CreateOrderResult = {
@@ -55,6 +57,10 @@ export async function createPaymentLinkOrder(
       buyer_email: input.customer.email,
       buyer_name: input.customer.name,
       buyer_mobile: input.customer.mobile,
+      ...(input.tracking?.fbp ? { buyer_fbp: input.tracking.fbp } : {}),
+      ...(input.tracking?.fbc ? { buyer_fbc: input.tracking.fbc } : {}),
+      ...(input.tracking?.clientIp ? { buyer_ip: input.tracking.clientIp } : {}),
+      ...(input.tracking?.userAgent ? { buyer_ua: input.tracking.userAgent } : {}),
     },
     expiry_date: expiry,
     payment_option: "full_payment",
@@ -103,6 +109,10 @@ export type OrderStatus = {
   customerEmail?: string;
   customerName?: string;
   customerMobile?: string;
+  fbp?: string;
+  fbc?: string;
+  clientIp?: string;
+  userAgent?: string;
   isPaid: boolean;
 };
 
@@ -165,7 +175,15 @@ export async function getOrder(orderId: string): Promise<OrderStatus> {
       amount?: string;
       customer_id?: string;
       customer?: { email?: string; given_name?: string; mobile?: string };
-      metadata?: { buyer_email?: string; buyer_name?: string; buyer_mobile?: string };
+      metadata?: {
+        buyer_email?: string;
+        buyer_name?: string;
+        buyer_mobile?: string;
+        buyer_fbp?: string;
+        buyer_fbc?: string;
+        buyer_ip?: string;
+        buyer_ua?: string;
+      };
     };
   };
   const d = json.data ?? {};
@@ -194,6 +212,10 @@ export async function getOrder(orderId: string): Promise<OrderStatus> {
     customerEmail: email,
     customerName: name,
     customerMobile: mobile,
+    fbp: meta.buyer_fbp,
+    fbc: meta.buyer_fbc,
+    clientIp: meta.buyer_ip,
+    userAgent: meta.buyer_ua,
     isPaid: PAID_STATES.has(status),
   };
 }

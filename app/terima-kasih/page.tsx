@@ -1,7 +1,6 @@
 import Link from "next/link";
 import type { Metadata } from "next";
 import { CheckCircle2, Mail, ArrowLeft } from "lucide-react";
-import { PixelEvent } from "@/components/analytics/meta-pixel";
 
 export const metadata: Metadata = {
   title: "Terima Kasih — KitabCuan",
@@ -12,7 +11,6 @@ export const metadata: Metadata = {
 export default function TerimaKasihPage() {
   return (
     <main className="flex min-h-screen items-center justify-center bg-background px-4 py-16 text-foreground">
-      <PixelEvent event="Purchase" params={{ currency: "IDR", value: 197000, content_name: "KitabCuan" }} />
       <div className="w-full max-w-lg rounded-3xl border-2 border-border bg-card p-8 text-center shadow-md sm:p-10">
         <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-primary/10 text-primary">
           <CheckCircle2 className="h-8 w-8" />

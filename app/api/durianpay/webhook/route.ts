@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { getOrder } from "@/lib/durianpay";
 import { signAccess } from "@/lib/access-token";
+import { sendMetaCapiPurchase } from "@/lib/meta-capi";
 import {
   sendBrevoEmail,
   deliveryEmailHtml,
@@ -71,6 +72,29 @@ export async function POST(request: Request) {
     const order = await getOrder(orderId);
     if (!order.isPaid) {
       return NextResponse.json({ ok: true, delivered: false, status: order.status });
+    }
+
+    // Kirim Purchase ke Meta Conversions API (server-side, terverifikasi). Non-fatal.
+    try {
+      const priceNum = Number(process.env.PRODUCT_PRICE || "197000");
+      const capi = await sendMetaCapiPurchase({
+        email: order.customerEmail,
+        phone: order.customerMobile,
+        name: order.customerName,
+        value: priceNum,
+        currency: "IDR",
+        eventId: order.orderRefId || order.id,
+        fbp: order.fbp,
+        fbc: order.fbc,
+        clientIp: order.clientIp,
+        userAgent: order.userAgent,
+        eventSourceUrl: `${siteUrl()}/terima-kasih`,
+      });
+      if (!capi.ok && capi.reason !== "capi_not_configured") {
+        console.error("[webhook] CAPI Purchase gagal:", capi.reason);
+      }
+    } catch (err) {
+      console.error("[webhook] CAPI error:", err);
     }
 
     const email = order.customerEmail;

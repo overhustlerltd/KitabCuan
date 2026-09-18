@@ -10,6 +10,8 @@ type OrderPayload = {
   name?: string;
   phone?: string;
   email?: string;
+  fbp?: string;
+  fbc?: string;
 };
 
 const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -41,11 +43,17 @@ export async function POST(request: Request) {
 
   const orderRefId = `kc-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
 
+  const clientIp = (request.headers.get("x-forwarded-for") || "").split(",")[0].trim() || undefined;
+  const userAgent = request.headers.get("user-agent") || undefined;
+  const fbp = (body.fbp ?? "").toString().trim() || undefined;
+  const fbc = (body.fbc ?? "").toString().trim() || undefined;
+
   try {
     const { paymentUrl } = await createPaymentLinkOrder({
       amount: PRODUCT_PRICE,
       orderRefId,
       customer: { name, email, mobile: `+62${phone}` },
+      tracking: { fbp, fbc, clientIp, userAgent },
     });
     return NextResponse.json({ ok: true, paymentUrl });
   } catch (err) {

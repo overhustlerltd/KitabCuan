@@ -71,13 +71,19 @@ export function OrderForm() {
     defaultValues: { name: "", phone: "", email: "" },
   });
 
+  const readCookie = (name: string) => {
+    if (typeof document === "undefined") return undefined;
+    const m = document.cookie.match(new RegExp("(?:^|; )" + name + "=([^;]*)"));
+    return m ? decodeURIComponent(m[1]) : undefined;
+  };
+
   const onSubmit = async (data: OrderFormValues) => {
     setSubmitError(null);
     try {
       const res = await fetch("/api/order", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data),
+        body: JSON.stringify({ ...data, fbp: readCookie("_fbp"), fbc: readCookie("_fbc") }),
       });
       const json = (await res.json().catch(() => ({}))) as {
         ok?: boolean;
