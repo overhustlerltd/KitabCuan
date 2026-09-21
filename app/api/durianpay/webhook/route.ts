@@ -3,7 +3,7 @@ import { getOrder, getOrderPayment, listOrders, type PaymentInfo } from "@/lib/d
 import { lookupLocation } from "@/lib/geo";
 import { signAccess } from "@/lib/access-token";
 import { sendMetaCapiPurchase } from "@/lib/meta-capi";
-import { sendDiscordPurchase } from "@/lib/discord";
+import { sendDiscordPurchase, sendDiscordDelivered } from "@/lib/discord";
 import {
   sendBrevoEmail,
   deliveryEmailHtml,
@@ -204,6 +204,13 @@ export async function POST(request: Request) {
       subject: "Akses KitabCuan kamu sudah aktif ✅",
       htmlContent: deliveryEmailHtml({ name, driveUrl, toolsUrl, price: PRODUCT_PRICE_LABEL }),
     });
+
+    // Notif Discord: produk (email akses) berhasil terkirim. Non-fatal.
+    try {
+      await sendDiscordDelivered({ name, email, orderRef: order.orderRefId || order.id });
+    } catch (err) {
+      console.error("[webhook] Discord delivered notif error:", err);
+    }
 
     const adminEmail = process.env.ADMIN_NOTIFY_EMAIL;
     if (adminEmail) {

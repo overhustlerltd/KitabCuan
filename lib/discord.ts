@@ -62,6 +62,38 @@ export async function sendDiscordPurchase(params: {
   return postDiscord(url, body);
 }
 
+export async function sendDiscordDelivered(params: {
+  name: string;
+  email: string;
+  orderRef: string;
+}): Promise<{ ok: boolean; reason?: string }> {
+  const url = process.env.DISCORD_WEBHOOK_URL;
+  if (!url) return { ok: false, reason: "discord_not_configured" };
+
+  const body = {
+    username: "KitabCuan",
+    embeds: [
+      {
+        title: "📦 Produk Terkirim — KitabCuan",
+        description: "Email akses berhasil dikirim ke pembeli ✅",
+        color: 0x2f7d32, // hijau
+        fields: [
+          { name: "👤 Nama", value: params.name || "-", inline: true },
+          { name: "📧 Email", value: params.email || "-", inline: true },
+          {
+            name: "📨 Yang dikirim",
+            value: "Link folder Google Drive + akses Tools AI",
+            inline: false,
+          },
+        ],
+        footer: { text: `KitabCuan • ${params.orderRef}` },
+        timestamp: new Date().toISOString(),
+      },
+    ],
+  };
+  return postDiscord(url, body);
+}
+
 export async function sendDiscordRecap(params: {
   dateLabel: string;
   count: number;
