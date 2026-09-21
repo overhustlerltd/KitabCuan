@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { getOrder } from "@/lib/durianpay";
 import { signAccess } from "@/lib/access-token";
 import { sendMetaCapiPurchase } from "@/lib/meta-capi";
+import { sendDiscordPurchase } from "@/lib/discord";
 import {
   sendBrevoEmail,
   deliveryEmailHtml,
@@ -95,6 +96,22 @@ export async function POST(request: Request) {
       }
     } catch (err) {
       console.error("[webhook] CAPI error:", err);
+    }
+
+    // Notifikasi Discord (server Kitab Cuan). Non-fatal.
+    try {
+      const disc = await sendDiscordPurchase({
+        name: order.customerName || "-",
+        email: order.customerEmail || "-",
+        mobile: order.customerMobile || "-",
+        price: PRODUCT_PRICE_LABEL,
+        orderRef: order.orderRefId || order.id,
+      });
+      if (!disc.ok && disc.reason !== "discord_not_configured") {
+        console.error("[webhook] Discord notif gagal:", disc.reason);
+      }
+    } catch (err) {
+      console.error("[webhook] Discord error:", err);
     }
 
     const email = order.customerEmail;
