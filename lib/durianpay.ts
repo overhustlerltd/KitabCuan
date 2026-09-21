@@ -219,3 +219,43 @@ export async function getOrder(orderId: string): Promise<OrderStatus> {
     isPaid: PAID_STATES.has(status),
   };
 }
+
+export type OrderSummary = {
+  id: string;
+  status: string;
+  amount: number;
+  createdAt?: string;
+  orderRefId?: string;
+  name?: string;
+  email?: string;
+  isPaid: boolean;
+};
+
+/** Ambil daftar order terbaru (untuk recap harian). */
+export async function listOrders(limit = 100): Promise<OrderSummary[]> {
+  const res = await fetch(`${BASE_URL}/orders?limit=${limit}`, {
+    method: "GET",
+    headers: { Authorization: authHeader(), Accept: "application/json" },
+    cache: "no-store",
+  });
+  if (!res.ok) {
+    const detail = await res.text().catch(() => "");
+    throw new Error(`DurianPay list orders ${res.status}: ${detail.slice(0, 300)}`);
+  }
+  const json = (await res.json()) as { data?: unknown };
+  const d = json.data as { orders?: unknown[] } | unknown[] | undefined;
+  const raw = Array.isArray(d) ? d : (d?.orders ?? []);
+  return (raw as Record<string, unknown>[]).map((o) => {
+    const status = String(o.status ?? "").toLowerCase();
+    return {
+      id: String(o.id ?? ""),
+      status,
+      amount: Number(o.amount) || 0,
+      createdAt: o.created_at as string | undefined,
+      orderRefId: o.order_ref_id as string | undefined,
+      name: o.given_name as string | undefined,
+      email: o.email as string | undefined,
+      isPaid: PAID_STATES.has(status),
+    };
+  });
+}

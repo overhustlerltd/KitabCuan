@@ -34,6 +34,44 @@ export async function sendDiscordPurchase(params: {
     ],
   };
 
+  return postDiscord(url, body);
+}
+
+export async function sendDiscordRecap(params: {
+  dateLabel: string;
+  count: number;
+  total: string;
+  lines: string[];
+}): Promise<{ ok: boolean; reason?: string }> {
+  const url = process.env.DISCORD_WEBHOOK_URL;
+  if (!url) return { ok: false, reason: "discord_not_configured" };
+
+  const description =
+    params.count === 0
+      ? "Belum ada pembelian hari ini. 🌙 Semangat besok!"
+      : params.lines.slice(0, 15).join("\n") +
+        (params.lines.length > 15 ? `\n…dan ${params.lines.length - 15} lainnya` : "");
+
+  const body = {
+    username: "KitabCuan",
+    embeds: [
+      {
+        title: `📊 Recap Harian — ${params.dateLabel}`,
+        color: 0xc9821f, // emas brand
+        fields: [
+          { name: "🧾 Total Transaksi", value: `${params.count} pembelian`, inline: true },
+          { name: "💰 Total Omzet", value: params.total, inline: true },
+        ],
+        description,
+        footer: { text: "KitabCuan • DurianPay" },
+        timestamp: new Date().toISOString(),
+      },
+    ],
+  };
+  return postDiscord(url, body);
+}
+
+async function postDiscord(url: string, body: unknown): Promise<{ ok: boolean; reason?: string }> {
   try {
     const res = await fetch(url, {
       method: "POST",
