@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
-import { getOrder } from "@/lib/durianpay";
+import { getOrder, getOrderPayment, listOrders, type PaymentInfo } from "@/lib/durianpay";
+import { lookupLocation } from "@/lib/geo";
 import { signAccess } from "@/lib/access-token";
 import { sendMetaCapiPurchase } from "@/lib/meta-capi";
 import { sendDiscordPurchase } from "@/lib/discord";
@@ -17,6 +18,50 @@ const PRODUCT_PRICE_LABEL = `Rp${Number(process.env.PRODUCT_PRICE || "197000").t
 
 function siteUrl(): string {
   return (process.env.NEXT_PUBLIC_SITE_URL || "https://kitabcuan.org").replace(/\/$/, "");
+}
+
+const WIB_MS = 7 * 60 * 60 * 1000;
+function rp(n: number): string {
+  return "Rp" + Math.round(n).toLocaleString("id-ID");
+}
+
+// Label metode pembayaran dari data DurianPay.
+function methodLabel(p: PaymentInfo | null): string {
+  if (!p) return "-";
+  const t = (p.detailsType || "").toLowerCase();
+  const id = p.methodId || "";
+  if (t.includes("qris")) return `QRIS${p.issuer ? ` (${p.issuer})` : ""}`;
+  if (t.includes("va")) return `${id} Virtual Account`;
+  if (t.includes("ewallet")) return id || "E-Wallet";
+  return id || "-";
+}
+
+// Biaya DurianPay: pakai total_fee kalau ada, kalau belum -> estimasi per metode.
+function feeInfo(p: PaymentInfo | null, amount: number): { label: string; net: string } {
+  if (p && p.totalFee > 0) {
+    return { label: rp(p.totalFee), net: rp(amount - p.totalFee) };
+  }
+  const t = (p?.detailsType || "").toLowerCase();
+  let est = amount * 0.007; // default QRIS ~0.7%
+  if (t.includes("va")) est = 4440; // VA flat
+  else if (t.includes("ewallet")) est = amount * 0.015; // e-wallet ~1.5%
+  return { label: `${rp(est)} (estimasi)`, net: rp(amount - est) };
+}
+
+// Jumlah + omzet penjualan lunas HARI INI (WIB), untuk recap di tiap notif.
+async function todayRecap(): Promise<{ count: number; total: number }> {
+  try {
+    const wibNow = new Date(Date.now() + WIB_MS);
+    const startMs =
+      Date.UTC(wibNow.getUTCFullYear(), wibNow.getUTCMonth(), wibNow.getUTCDate()) - WIB_MS;
+    const orders = await listOrders(100);
+    const today = orders.filter(
+      (o) => o.isPaid && o.createdAt && new Date(o.createdAt).getTime() >= startMs,
+    );
+    return { count: today.length, total: today.reduce((s, o) => s + o.amount, 0) };
+  } catch {
+    return { count: 0, total: 0 };
+  }
 }
 
 // Cari string apa pun yang berbentuk order id DurianPay ("ord_...") di seluruh payload.
@@ -75,9 +120,11 @@ export async function POST(request: Request) {
       return NextResponse.json({ ok: true, delivered: false, status: order.status });
     }
 
+    const priceNum = Number(process.env.PRODUCT_PRICE || "197000");
+
     // Kirim Purchase ke Meta Conversions API (server-side, terverifikasi). Non-fatal.
+    let capiFired = false;
     try {
-      const priceNum = Number(process.env.PRODUCT_PRICE || "197000");
       const capi = await sendMetaCapiPurchase({
         email: order.customerEmail,
         phone: order.customerMobile,
@@ -91,6 +138,7 @@ export async function POST(request: Request) {
         userAgent: order.userAgent,
         eventSourceUrl: `${siteUrl()}/terima-kasih`,
       });
+      capiFired = capi.ok;
       if (!capi.ok && capi.reason !== "capi_not_configured") {
         console.error("[webhook] CAPI Purchase gagal:", capi.reason);
       }
@@ -98,14 +146,33 @@ export async function POST(request: Request) {
       console.error("[webhook] CAPI error:", err);
     }
 
-    // Notifikasi Discord (server Kitab Cuan). Non-fatal.
+    // Notifikasi Discord detail (server Kitab Cuan). Non-fatal.
     try {
+      const [payment, city, recap] = await Promise.all([
+        getOrderPayment(order.id),
+        lookupLocation(order.clientIp),
+        todayRecap(),
+      ]);
+      const fee = feeInfo(payment, priceNum);
+      const source = order.fbc
+        ? "🟢 Iklan (ad-click)"
+        : order.fbp
+          ? "🔵 Organik / traffic"
+          : "🔵 Langsung";
       const disc = await sendDiscordPurchase({
         name: order.customerName || "-",
         email: order.customerEmail || "-",
         mobile: order.customerMobile || "-",
-        price: PRODUCT_PRICE_LABEL,
+        amount: PRODUCT_PRICE_LABEL,
+        city,
+        method: methodLabel(payment),
+        feeLabel: fee.label,
+        netLabel: fee.net,
+        source,
+        capiFired,
         orderRef: order.orderRefId || order.id,
+        todayCount: recap.count,
+        todayTotal: rp(recap.total),
       });
       if (!disc.ok && disc.reason !== "discord_not_configured") {
         console.error("[webhook] Discord notif gagal:", disc.reason);

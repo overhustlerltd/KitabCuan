@@ -220,6 +220,45 @@ export async function getOrder(orderId: string): Promise<OrderStatus> {
   };
 }
 
+export type PaymentInfo = {
+  methodId?: string; // QRIS, BCA, OVO, dll
+  detailsType?: string; // qris_details / va_details / ewallet_details
+  issuer?: string; // untuk QRIS: bank/wallet asli (mis. Bank BCA)
+  totalFee: number; // biaya DurianPay (0 kalau belum tersedia)
+  amount: number;
+};
+
+/** Ambil detail pembayaran sebuah order (metode + biaya DurianPay). */
+export async function getOrderPayment(orderId: string): Promise<PaymentInfo | null> {
+  try {
+    const res = await fetch(`${BASE_URL}/payments?order_id=${encodeURIComponent(orderId)}&limit=20`, {
+      method: "GET",
+      headers: { Authorization: authHeader(), Accept: "application/json" },
+      cache: "no-store",
+    });
+    if (!res.ok) return null;
+    const json = (await res.json()) as { data?: { payments?: Record<string, unknown>[] } };
+    const pays = json.data?.payments ?? [];
+    // filter ke order ini (API kadang tak memfilter), utamakan yang completed
+    const forOrder = pays.filter((p) => p.order_id === orderId);
+    const pool = forOrder.length ? forOrder : pays;
+    const p =
+      pool.find((x) => ["completed", "paid", "settled", "success"].includes(String(x.status ?? "").toLowerCase())) ||
+      pool[0];
+    if (!p) return null;
+    const meta = (p.metadata as Record<string, unknown>) || {};
+    return {
+      methodId: p.method_id as string | undefined,
+      detailsType: p.payment_details_type as string | undefined,
+      issuer: (meta.ISSUER_NAME as string | undefined) || undefined,
+      totalFee: Number(p.total_fee) || 0,
+      amount: Number(p.amount) || 0,
+    };
+  } catch {
+    return null;
+  }
+}
+
 export type OrderSummary = {
   id: string;
   status: string;

@@ -8,27 +8,52 @@ export async function sendDiscordPurchase(params: {
   name: string;
   email: string;
   mobile: string;
-  price: string;
+  amount: string; // Rp197.000
+  city?: string;
+  method?: string; // "QRIS (Bank BCA)" / "BCA Virtual Account" / "OVO"
+  feeLabel?: string; // "Rp1.379" atau "Rp4.440 (estimasi)"
+  netLabel?: string; // amount - fee
+  source: string; // "🟢 Iklan (ad-click)" / "🔵 Organik / langsung"
+  capiFired: boolean;
   orderRef: string;
+  todayCount: number;
+  todayTotal: string; // Rp X
 }): Promise<{ ok: boolean; reason?: string }> {
   const url = process.env.DISCORD_WEBHOOK_URL;
   if (!url) return { ok: false, reason: "discord_not_configured" };
+
+  const feeText = params.feeLabel
+    ? `${params.feeLabel}${params.netLabel ? ` · Net ${params.netLabel}` : ""}`
+    : "-";
+
+  const fields = [
+    { name: "👤 Nama", value: params.name || "-", inline: true },
+    { name: "📧 Email", value: params.email || "-", inline: true },
+    { name: "💵 Jumlah", value: params.amount || "-", inline: true },
+    { name: "🏙️ Kota", value: params.city || "-", inline: true },
+    { name: "💳 Metode", value: params.method || "-", inline: true },
+    { name: "🏦 Biaya DurianPay", value: feeText, inline: true },
+    {
+      name: "📈 Sumber",
+      value: `${params.source} → di-fire ke Meta ${params.capiFired ? "✅" : "—"}`,
+      inline: false,
+    },
+    { name: "✅ Status", value: `PAID · ${params.mobile || "-"}`, inline: false },
+    {
+      name: "📊 Penjualan hari ini",
+      value: `**#${params.todayCount}** · ${params.todayTotal}`,
+      inline: false,
+    },
+  ];
 
   const body = {
     username: "KitabCuan",
     embeds: [
       {
-        title: "💰 Pembelian Baru!",
-        description: "Ada pembeli baru **KitabCuan** 🎉",
+        title: "💰 Pembelian Baru — KitabCuan",
         color: 0x47632b, // hijau brand
-        fields: [
-          { name: "👤 Nama", value: params.name || "-", inline: true },
-          { name: "💵 Total", value: params.price || "-", inline: true },
-          { name: "📧 Email", value: params.email || "-", inline: false },
-          { name: "📱 WhatsApp", value: params.mobile || "-", inline: true },
-          { name: "🧾 Order Ref", value: params.orderRef || "-", inline: true },
-        ],
-        footer: { text: "KitabCuan • DurianPay" },
+        fields,
+        footer: { text: `KitabCuan • DurianPay • ${params.orderRef}` },
         timestamp: new Date().toISOString(),
       },
     ],
