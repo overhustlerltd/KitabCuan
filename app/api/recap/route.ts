@@ -41,9 +41,13 @@ export async function GET(request: Request) {
     return NextResponse.json({ ok: false, error: "list_failed" }, { status: 502 });
   }
 
-  const today = orders.filter(
-    (o) => o.isPaid && o.createdAt && new Date(o.createdAt).getTime() >= startWibMs,
-  );
+  // Hitung penjualan HARI INI berdasarkan waktu BAYAR (paidAt), bukan waktu order dibuat.
+  // Order payment-link sering dibuat beda hari dari saat dibayar, jadi created_at tidak akurat.
+  const today = orders.filter((o) => {
+    if (!o.isPaid) return false;
+    const ts = o.paidAt || o.createdAt;
+    return ts ? new Date(ts).getTime() >= startWibMs : false;
+  });
   const count = today.length;
   const total = today.reduce((s, o) => s + o.amount, 0);
   const lines = today.map((o) => `• ${o.name || "Buyer"} — ${formatRp(o.amount)}`);

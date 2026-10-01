@@ -55,9 +55,11 @@ async function todayRecap(): Promise<{ count: number; total: number }> {
     const startMs =
       Date.UTC(wibNow.getUTCFullYear(), wibNow.getUTCMonth(), wibNow.getUTCDate()) - WIB_MS;
     const orders = await listOrders(100);
-    const today = orders.filter(
-      (o) => o.isPaid && o.createdAt && new Date(o.createdAt).getTime() >= startMs,
-    );
+    const today = orders.filter((o) => {
+      if (!o.isPaid) return false;
+      const ts = o.paidAt || o.createdAt;
+      return ts ? new Date(ts).getTime() >= startMs : false;
+    });
     return { count: today.length, total: today.reduce((s, o) => s + o.amount, 0) };
   } catch {
     return { count: 0, total: 0 };

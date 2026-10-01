@@ -277,6 +277,7 @@ export type OrderSummary = {
   status: string;
   amount: number;
   createdAt?: string;
+  paidAt?: string; // updated_at: untuk order completed ≈ waktu pembayaran
   orderRefId?: string;
   name?: string;
   email?: string;
@@ -304,6 +305,7 @@ export async function listOrders(limit = 100): Promise<OrderSummary[]> {
       status,
       amount: Number(o.amount) || 0,
       createdAt: o.created_at as string | undefined,
+      paidAt: o.updated_at as string | undefined,
       orderRefId: o.order_ref_id as string | undefined,
       name: o.given_name as string | undefined,
       email: o.email as string | undefined,
