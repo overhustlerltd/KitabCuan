@@ -284,7 +284,7 @@ export const PRODUCT_REVEAL_CONTENT = {
   totalValue: "Rp3.000.000+",
   todayLabel: "HARGA SPESIAL KHUSUS HARI INI",
   priceLead: "Kamu tidak perlu membayar jutaan rupiah untuk mendapatkan semuanya. Hari ini, cukup:",
-  promoPrice: "Rp297.000",
+  promoPrice: "Rp197.000",
   ctaLabel: "📦 DAPATKAN KITABCUAN SEKARANG",
   ctaHref: "#order",
 };
@@ -512,8 +512,8 @@ export const FINAL_OFFER_CONTENT = {
   valueNote: "Kamu tidak perlu membeli semuanya satu per satu.",
   todayLabel: "KHUSUS HARI INI…",
   todayOriginal: "Rp2.475.000",
-  todayPrice: "Rp297.000",
-  todayDiscount: "DISKON 88%",
+  todayPrice: "Rp197.000",
+  todayDiscount: "DISKON 92%",
   imagine:
     "Bayangkan… dengan modal kurang dari Rp300 ribu, kamu sudah memiliki bekal lengkap untuk mulai membangun bisnis dan membuka peluang menghasilkan jutaan rupiah setiap bulannya.",
   earlyBadge: "🎁 KHUSUS 50 PEMBELI PERTAMA HARI INI",

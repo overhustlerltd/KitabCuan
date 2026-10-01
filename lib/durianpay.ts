@@ -40,11 +40,24 @@ export async function createPaymentLinkOrder(
     Date.now() + (input.expiryMinutes ?? 60 * 24) * 60 * 1000,
   ).toISOString();
 
+  // Nama + gambar produk supaya halaman bayar DurianPay tidak kosong/broken.
+  const productName = "KitabCuan — Panduan Digital Bisnis";
+  const productImage = "https://kitabcuan.org/kitabcuan-cover.png";
+
   const body = {
     amount: String(input.amount),
     currency: "IDR",
     is_payment_link: true,
     order_ref_id: input.orderRefId,
+    description: productName,
+    items: [
+      {
+        name: productName,
+        qty: 1,
+        price: String(input.amount),
+        logo: productImage,
+      },
+    ],
     customer: {
       customer_ref_id: input.customer.email,
       given_name: input.customer.name,
