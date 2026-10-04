@@ -1,3 +1,5 @@
 {
-  "crons": []
+  "crons": [
+    { "path": "/api/recap", "schedule": "59 16 * * *" }
+  ]
 }
