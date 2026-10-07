@@ -93,16 +93,9 @@ function TrustBadge() {
           <Lock className="h-3.5 w-3.5" /> SSL SECURED
         </span>
         <span className="hidden h-4 w-px bg-border sm:block" />
-        {/* HIMBARA */}
-        <span className="flex items-center gap-1.5">
-          <span className="grid grid-cols-2 gap-[2px]">
-            <i className="block h-2 w-2 rounded-[2px] bg-[#1d4ed8]" />
-            <i className="block h-2 w-2 rounded-[2px] bg-[#f59e0b]" />
-            <i className="block h-2 w-2 rounded-[2px] bg-[#dc2626]" />
-            <i className="block h-2 w-2 rounded-[2px] bg-[#0d9488]" />
-          </span>
-          <span className="text-xs font-extrabold tracking-wide text-neutral-700">HIMBARA</span>
-        </span>
+        {/* HIMBARA (logo resmi) */}
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src="/trust/himbara.png" alt="HIMBARA" className="h-5 w-auto object-contain" />
         <span className="hidden h-4 w-px bg-border sm:block" />
         {/* DurianPay */}
         <span className="flex items-center gap-1 text-xs font-extrabold text-[#d6336c]">
@@ -372,17 +365,17 @@ export function OrderForm() {
                         <p className="text-sm font-semibold text-neutral-600">
                           Virtual Account {activeMethod?.label}
                         </p>
-                        <div className="flex items-center gap-2 rounded-xl border border-border bg-white px-3 py-2.5">
-                          <span className="min-w-0 flex-1 break-all font-mono text-base font-extrabold text-foreground sm:text-lg">
+                        <div className="flex flex-col gap-2 rounded-xl border border-border bg-white px-4 py-3">
+                          <span className="break-all text-center font-mono text-xl font-extrabold tracking-wider text-foreground sm:text-2xl">
                             {vaState.accountNumber}
                           </span>
                           <button
                             type="button"
                             onClick={() => copyVa(vaState.accountNumber)}
-                            className="flex shrink-0 items-center gap-1 rounded-lg bg-primary/10 px-2.5 py-2 text-sm font-bold text-primary hover:bg-primary/20"
+                            className="flex w-full items-center justify-center gap-1.5 rounded-lg bg-primary/10 py-2.5 text-sm font-bold text-primary hover:bg-primary/20"
                           >
                             {copied ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
-                            {copied ? "Tersalin" : "Salin"}
+                            {copied ? "Tersalin!" : "Salin Nomor VA"}
                           </button>
                         </div>
                         <div className="rounded-xl bg-muted/60 p-3 text-xs text-neutral-600">
