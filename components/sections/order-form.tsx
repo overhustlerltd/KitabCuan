@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { Loader2, ShieldCheck, AlertCircle, CheckCircle2, Copy, Check } from "lucide-react";
+import { Loader2, ShieldCheck, AlertCircle, CheckCircle2, Copy, Check, Lock } from "lucide-react";
 
 import QrisSvg from "idn-finlogos/icons/qris";
 import BcaSvg from "idn-finlogos/icons/bca";
@@ -69,6 +69,53 @@ function formatClock(totalSec: number): string {
   const mm = String(m).padStart(2, "0");
   const ss = String(s).padStart(2, "0");
   return h > 0 ? `${h}:${mm}:${ss}` : `${mm}:${ss}`;
+}
+
+/** Badge kepercayaan: pembayaran aman + logo SSL / HIMBARA / DurianPay. */
+function TrustBadge() {
+  return (
+    <div className="rounded-2xl border border-border bg-white/70 p-4">
+      <div className="flex items-start gap-3">
+        <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-green-100">
+          <ShieldCheck className="h-5 w-5 text-green-600" />
+        </span>
+        <p className="text-sm leading-snug text-neutral-700">
+          <span className="font-bold text-foreground">Pembayaran 100% aman &amp; terenkripsi</span>
+          <br />
+          Diproses oleh <span className="font-semibold text-foreground">DurianPay</span> · dipercaya{" "}
+          <span className="font-bold text-green-600">3.200+</span> pembeli
+        </p>
+      </div>
+
+      <div className="mt-3 flex flex-wrap items-center justify-center gap-x-4 gap-y-2 border-t border-dashed border-border pt-3">
+        {/* SSL SECURED */}
+        <span className="flex items-center gap-1 text-[11px] font-extrabold tracking-wide text-green-700">
+          <Lock className="h-3.5 w-3.5" /> SSL SECURED
+        </span>
+        <span className="hidden h-4 w-px bg-border sm:block" />
+        {/* HIMBARA */}
+        <span className="flex items-center gap-1.5">
+          <span className="grid grid-cols-2 gap-[2px]">
+            <i className="block h-2 w-2 rounded-[2px] bg-[#1d4ed8]" />
+            <i className="block h-2 w-2 rounded-[2px] bg-[#f59e0b]" />
+            <i className="block h-2 w-2 rounded-[2px] bg-[#dc2626]" />
+            <i className="block h-2 w-2 rounded-[2px] bg-[#0d9488]" />
+          </span>
+          <span className="text-xs font-extrabold tracking-wide text-neutral-700">HIMBARA</span>
+        </span>
+        <span className="hidden h-4 w-px bg-border sm:block" />
+        {/* DurianPay */}
+        <span className="flex items-center gap-1 text-xs font-extrabold text-[#d6336c]">
+          <svg viewBox="0 0 24 24" className="h-4 w-4" aria-hidden="true">
+            <polygon points="12,2 20,7 20,17 12,22 4,17 4,7" fill="#d6336c" />
+            <polygon points="12,6 16.5,8.8 16.5,15.2 12,18 7.5,15.2 7.5,8.8" fill="#fff" />
+            <polygon points="12,9 14.5,10.5 14.5,13.5 12,15 9.5,13.5 9.5,10.5" fill="#d6336c" />
+          </svg>
+          durianpay
+        </span>
+      </div>
+    </div>
+  );
 }
 
 export function OrderForm() {
@@ -325,14 +372,14 @@ export function OrderForm() {
                         <p className="text-sm font-semibold text-neutral-600">
                           Virtual Account {activeMethod?.label}
                         </p>
-                        <div className="flex items-center justify-between gap-3 rounded-xl border border-border bg-white px-4 py-3">
-                          <span className="font-mono text-lg font-extrabold tracking-wide text-foreground sm:text-xl">
+                        <div className="flex items-center gap-2 rounded-xl border border-border bg-white px-3 py-2.5">
+                          <span className="min-w-0 flex-1 break-all font-mono text-base font-extrabold text-foreground sm:text-lg">
                             {vaState.accountNumber}
                           </span>
                           <button
                             type="button"
                             onClick={() => copyVa(vaState.accountNumber)}
-                            className="flex shrink-0 items-center gap-1 rounded-lg bg-primary/10 px-3 py-1.5 text-sm font-bold text-primary hover:bg-primary/20"
+                            className="flex shrink-0 items-center gap-1 rounded-lg bg-primary/10 px-2.5 py-2 text-sm font-bold text-primary hover:bg-primary/20"
                           >
                             {copied ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
                             {copied ? "Tersalin" : "Salin"}
@@ -375,6 +422,8 @@ export function OrderForm() {
                       Ganti data / batal
                     </button>
                   </div>
+
+                  <TrustBadge />
                 </>
               )}
             </div>
@@ -470,6 +519,8 @@ export function OrderForm() {
                   QRIS &amp; Virtual Account semua bank — bayar langsung di halaman ini, aman via DurianPay.
                 </p>
               </div>
+
+              <TrustBadge />
 
               {submitError && (
                 <p className="flex items-center gap-2 rounded-xl bg-red-50 px-4 py-3 text-sm font-semibold text-red-600">
