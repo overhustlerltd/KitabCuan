@@ -1,53 +1,16 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { Loader2, ShieldCheck, AlertCircle } from "lucide-react";
-
-// Logo metode pembayaran (display-only) — sesuai channel aktif di DurianPay.
-import QrisSvg from "idn-finlogos/icons/qris";
-import BcaSvg from "idn-finlogos/icons/bca";
-import BriSvg from "idn-finlogos/icons/bri";
-import MandiriSvg from "idn-finlogos/icons/mandiri";
-import BniSvg from "idn-finlogos/icons/bni";
-import PermataSvg from "idn-finlogos/icons/permata";
-import CimbSvg from "idn-finlogos/icons/cimb-niaga";
-import OvoSvg from "idn-finlogos/icons/ovo";
-import LinkAjaSvg from "idn-finlogos/icons/link-aja";
+import { Loader2, ShieldCheck, AlertCircle, CheckCircle2, QrCode } from "lucide-react";
 
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { ORDER_FORM_CONTENT } from "@/lib/constants";
 import { trackFb } from "@/components/analytics/meta-pixel";
-
-const SUPPORTED_METHODS: { svg: string; label: string }[] = [
-  { svg: QrisSvg, label: "QRIS" },
-  { svg: BcaSvg, label: "BCA Virtual Account" },
-  { svg: BriSvg, label: "BRI Virtual Account" },
-  { svg: MandiriSvg, label: "Mandiri Virtual Account" },
-  { svg: BniSvg, label: "BNI Virtual Account" },
-  { svg: PermataSvg, label: "Permata Virtual Account" },
-  { svg: CimbSvg, label: "CIMB Niaga Virtual Account" },
-  { svg: OvoSvg, label: "OVO" },
-  { svg: LinkAjaSvg, label: "LinkAja" },
-];
-
-/** Badge logo inline dari string SVG idn-finlogos. */
-function PaymentBadge({ svg, label }: { svg: string; label: string }) {
-  const styled = svg.replace(/<svg/, `<svg style="width:100%;height:100%;display:block;object-fit:contain;"`);
-  return (
-    <span
-      role="img"
-      aria-label={label}
-      title={label}
-      className="flex h-9 w-16 items-center justify-center rounded-lg border border-border bg-white p-1.5 shadow-2xs"
-      dangerouslySetInnerHTML={{ __html: styled }}
-    />
-  );
-}
 
 const phoneRegex = /^8[0-9]{8,11}$/;
 
@@ -59,9 +22,27 @@ const orderFormSchema = z.object({
 
 type OrderFormValues = z.infer<typeof orderFormSchema>;
 
+type Payment = {
+  orderId: string;
+  qrString: string;
+  expiresAt?: string;
+  amount: number;
+};
+
+function formatClock(totalSec: number): string {
+  const m = Math.floor(totalSec / 60);
+  const s = totalSec % 60;
+  return `${String(m).padStart(2, "0")}:${String(s).padStart(2, "0")}`;
+}
+
 export function OrderForm() {
   const [submitError, setSubmitError] = useState<string | null>(null);
-  const [redirecting, setRedirecting] = useState(false);
+  const [payment, setPayment] = useState<Payment | null>(null);
+  const [paid, setPaid] = useState(false);
+  const [secondsLeft, setSecondsLeft] = useState<number | null>(null);
+  const [checking, setChecking] = useState(false);
+  const pollRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
   const {
     register,
     handleSubmit,
@@ -87,13 +68,20 @@ export function OrderForm() {
       });
       const json = (await res.json().catch(() => ({}))) as {
         ok?: boolean;
-        paymentUrl?: string;
+        orderId?: string;
+        qrString?: string;
+        expiresAt?: string;
+        amount?: number;
       };
-      if (res.ok && json.ok && json.paymentUrl) {
+      if (res.ok && json.ok && json.orderId && json.qrString) {
         trackFb("Lead", { content_name: "KitabCuan", currency: "IDR", value: 197000 });
         trackFb("InitiateCheckout", { content_name: "KitabCuan", currency: "IDR", value: 197000 });
-        setRedirecting(true);
-        window.location.href = json.paymentUrl;
+        setPayment({
+          orderId: json.orderId,
+          qrString: json.qrString,
+          expiresAt: json.expiresAt,
+          amount: json.amount ?? 197000,
+        });
         return;
       }
       setSubmitError(ORDER_FORM_CONTENT.errorMessage);
@@ -102,7 +90,71 @@ export function OrderForm() {
     }
   };
 
-  const busy = isSubmitting || redirecting;
+  // Poll status pembayaran tiap 4 detik; begitu lunas → arahkan ke terima kasih.
+  useEffect(() => {
+    if (!payment || paid) return;
+
+    const check = async () => {
+      try {
+        const r = await fetch(`/api/order/status?order=${encodeURIComponent(payment.orderId)}`, {
+          cache: "no-store",
+        });
+        const j = (await r.json().catch(() => ({}))) as { paid?: boolean };
+        if (j.paid) {
+          setPaid(true);
+          if (pollRef.current) clearInterval(pollRef.current);
+          setTimeout(() => {
+            window.location.href = "/terima-kasih";
+          }, 1800);
+        }
+      } catch {
+        /* abaikan, coba lagi di tick berikutnya */
+      }
+    };
+
+    pollRef.current = setInterval(check, 4000);
+    return () => {
+      if (pollRef.current) clearInterval(pollRef.current);
+    };
+  }, [payment, paid]);
+
+  // Hitung mundur masa berlaku QR.
+  useEffect(() => {
+    if (!payment?.expiresAt || paid) return;
+    const target = new Date(payment.expiresAt).getTime();
+    const tick = () => setSecondsLeft(Math.max(0, Math.round((target - Date.now()) / 1000)));
+    tick();
+    const id = setInterval(tick, 1000);
+    return () => clearInterval(id);
+  }, [payment, paid]);
+
+  const manualCheck = async () => {
+    if (!payment) return;
+    setChecking(true);
+    try {
+      const r = await fetch(`/api/order/status?order=${encodeURIComponent(payment.orderId)}`, {
+        cache: "no-store",
+      });
+      const j = (await r.json().catch(() => ({}))) as { paid?: boolean };
+      if (j.paid) {
+        setPaid(true);
+        window.location.href = "/terima-kasih";
+      }
+    } finally {
+      setChecking(false);
+    }
+  };
+
+  const resetToForm = () => {
+    setPayment(null);
+    setPaid(false);
+    setSecondsLeft(null);
+    setSubmitError(null);
+  };
+
+  const expired = secondsLeft !== null && secondsLeft <= 0 && !paid;
+  const busy = isSubmitting;
+  const rp = (n: number) => "Rp" + n.toLocaleString("id-ID");
 
   return (
     <section id="order" className="bg-neutral-100/60 pb-16 pt-10 md:pb-24 md:pt-12">
@@ -112,113 +164,178 @@ export function OrderForm() {
         </div>
 
         <div className="mt-8 rounded-3xl border-2 border-border bg-card p-6 shadow-md sm:p-8">
-          <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-6" noValidate>
-            <div className="flex flex-col gap-2">
-              <label htmlFor="name" className="text-base font-bold text-foreground">
-                Nama Lengkap
-              </label>
-              <Input id="name" placeholder="Contoh: Ibu Ani / Pak Budi" invalid={!!errors.name} className="h-12 text-base" {...register("name")} />
-              {errors.name && <p className="text-sm font-semibold text-red-600">{errors.name.message}</p>}
-            </div>
-
-            <div className="flex flex-col gap-2">
-              <label htmlFor="phone" className="text-base font-bold text-foreground">
-                Nomor WhatsApp
-              </label>
-              <div
-                className={cn(
-                  "flex h-12 items-center overflow-hidden rounded-xl border border-border bg-background focus-within:ring-2 focus-within:ring-primary",
-                  errors.phone && "border-red-500 focus-within:ring-red-500",
-                )}
-              >
-                <span className="flex h-full items-center border-r border-border bg-muted px-4 text-base font-bold text-neutral-600">
-                  +62
-                </span>
-                <input
-                  id="phone"
-                  type="tel"
-                  inputMode="numeric"
-                  placeholder="81234567890"
-                  className="h-full flex-1 bg-transparent px-4 text-base text-foreground placeholder:text-neutral-400 focus:outline-none"
-                  {...register("phone")}
-                />
-              </div>
-              {errors.phone && <p className="text-sm font-semibold text-red-600">{errors.phone.message}</p>}
-            </div>
-
-            <div className="flex flex-col gap-2">
-              <label htmlFor="email" className="text-base font-bold text-foreground">
-                Alamat Email
-              </label>
-              <Input
-                id="email"
-                type="email"
-                placeholder="nama@gmail.com"
-                invalid={!!errors.email}
-                className="h-12 text-base"
-                {...register("email")}
-              />
-              <p className="text-sm text-neutral-500">Akses kitab + tools AI dikirim ke email ini, pastikan benar.</p>
-              {errors.email && <p className="text-sm font-semibold text-red-600">{errors.email.message}</p>}
-            </div>
-
-            {/* Rincian Pesanan + Total */}
-            <div className="rounded-2xl border border-border bg-muted/40 p-5">
-              <p className="font-heading text-lg font-bold text-foreground">
-                {ORDER_FORM_CONTENT.summaryTitle}
+          {/* ===== SUKSES ===== */}
+          {paid ? (
+            <div className="flex flex-col items-center gap-4 py-6 text-center">
+              <CheckCircle2 className="h-16 w-16 text-green-600" />
+              <h3 className="font-heading text-2xl font-extrabold text-foreground">Pembayaran Berhasil! 🎉</h3>
+              <p className="max-w-md text-base text-neutral-600">
+                Terima kasih! Akses KitabCuan + Tools AI sedang dikirim ke emailmu. Mengarahkan…
               </p>
-              <div className="mt-4 flex flex-col gap-3">
-                {ORDER_FORM_CONTENT.summaryItems.map((item) => (
-                  <div key={item.label} className="flex items-start justify-between gap-3">
-                    <div>
-                      <p className="text-base font-semibold text-foreground">{item.label}</p>
-                      {item.note && <p className="text-sm text-neutral-500">{item.note}</p>}
-                    </div>
-                    <p
-                      className={`whitespace-nowrap text-base font-semibold ${
-                        item.isDiscount ? "text-green-600" : "text-foreground"
-                      }`}
-                    >
-                      {item.value}
-                    </p>
-                  </div>
-                ))}
-              </div>
-              <div className="mt-4 flex items-center justify-between border-t border-border pt-4">
-                <span className="font-heading text-lg font-bold text-foreground">
-                  {ORDER_FORM_CONTENT.totalLabel}
-                </span>
-                <span className="font-heading text-2xl font-extrabold text-primary sm:text-3xl">
-                  {ORDER_FORM_CONTENT.totalValue}
-                </span>
-              </div>
+              <Loader2 className="h-5 w-5 animate-spin text-primary" />
             </div>
-
-            <div className="flex flex-col gap-3 rounded-2xl border border-border bg-muted/30 p-4">
-              <p className="text-sm font-bold text-foreground">Bisa bayar pakai:</p>
-              <div className="flex flex-wrap gap-2">
-                {SUPPORTED_METHODS.map((m) => (
-                  <PaymentBadge key={m.label} svg={m.svg} label={m.label} />
-                ))}
+          ) : payment ? (
+            /* ===== HALAMAN BAYAR QRIS (ON-PAGE) ===== */
+            <div className="flex flex-col items-center gap-5 text-center">
+              <div className="flex flex-col items-center gap-1">
+                <span className="inline-flex items-center gap-2 rounded-full bg-primary/10 px-3 py-1 text-sm font-bold text-primary">
+                  <QrCode className="h-4 w-4" /> Bayar pakai QRIS
+                </span>
+                <p className="mt-2 font-heading text-3xl font-extrabold text-primary">{rp(payment.amount)}</p>
               </div>
+
+              {expired ? (
+                <div className="flex flex-col items-center gap-3 py-6">
+                  <AlertCircle className="h-10 w-10 text-red-500" />
+                  <p className="font-semibold text-foreground">QR sudah kedaluwarsa.</p>
+                  <Button variant="accent" size="lg" onClick={resetToForm}>
+                    Buat QR Baru
+                  </Button>
+                </div>
+              ) : (
+                <>
+                  {/* QR */}
+                  <div className="rounded-2xl border-2 border-border bg-white p-3 shadow-sm">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={payment.qrString}
+                      alt="QRIS KitabCuan"
+                      className="h-60 w-60 object-contain sm:h-72 sm:w-72"
+                    />
+                  </div>
+
+                  <p className="max-w-sm text-sm text-neutral-600">
+                    Scan QR ini pakai aplikasi apa aja: <strong>GoPay, OVO, DANA, ShopeePay</strong> atau{" "}
+                    <strong>m-banking</strong> (BCA, Mandiri, BNI, BRI, dll).
+                  </p>
+
+                  {secondsLeft !== null && (
+                    <p className="text-sm text-neutral-500">
+                      Berlaku <span className="font-bold text-foreground">{formatClock(secondsLeft)}</span>
+                    </p>
+                  )}
+
+                  <div className="flex items-center gap-2 rounded-xl bg-amber-50 px-4 py-3 text-sm font-semibold text-amber-700">
+                    <Loader2 className="h-4 w-4 shrink-0 animate-spin" />
+                    Menunggu pembayaran… halaman otomatis lanjut begitu lunas.
+                  </div>
+
+                  <button
+                    type="button"
+                    onClick={manualCheck}
+                    disabled={checking}
+                    className="text-sm font-bold text-primary underline-offset-2 hover:underline disabled:opacity-60"
+                  >
+                    {checking ? "Mengecek…" : "Sudah bayar? Cek status sekarang"}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={resetToForm}
+                    className="text-xs text-neutral-400 hover:text-neutral-600"
+                  >
+                    Ganti data / batal
+                  </button>
+                </>
+              )}
+            </div>
+          ) : (
+            /* ===== FORM ORDER ===== */
+            <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-6" noValidate>
+              <div className="flex flex-col gap-2">
+                <label htmlFor="name" className="text-base font-bold text-foreground">
+                  Nama Lengkap
+                </label>
+                <Input id="name" placeholder="Contoh: Ibu Ani / Pak Budi" invalid={!!errors.name} className="h-12 text-base" {...register("name")} />
+                {errors.name && <p className="text-sm font-semibold text-red-600">{errors.name.message}</p>}
+              </div>
+
+              <div className="flex flex-col gap-2">
+                <label htmlFor="phone" className="text-base font-bold text-foreground">
+                  Nomor WhatsApp
+                </label>
+                <div
+                  className={cn(
+                    "flex h-12 items-center overflow-hidden rounded-xl border border-border bg-background focus-within:ring-2 focus-within:ring-primary",
+                    errors.phone && "border-red-500 focus-within:ring-red-500",
+                  )}
+                >
+                  <span className="flex h-full items-center border-r border-border bg-muted px-4 text-base font-bold text-neutral-600">
+                    +62
+                  </span>
+                  <input
+                    id="phone"
+                    type="tel"
+                    inputMode="numeric"
+                    placeholder="81234567890"
+                    className="h-full flex-1 bg-transparent px-4 text-base text-foreground placeholder:text-neutral-400 focus:outline-none"
+                    {...register("phone")}
+                  />
+                </div>
+                {errors.phone && <p className="text-sm font-semibold text-red-600">{errors.phone.message}</p>}
+              </div>
+
+              <div className="flex flex-col gap-2">
+                <label htmlFor="email" className="text-base font-bold text-foreground">
+                  Alamat Email
+                </label>
+                <Input
+                  id="email"
+                  type="email"
+                  placeholder="nama@gmail.com"
+                  invalid={!!errors.email}
+                  className="h-12 text-base"
+                  {...register("email")}
+                />
+                <p className="text-sm text-neutral-500">Akses kitab + tools AI dikirim ke email ini, pastikan benar.</p>
+                {errors.email && <p className="text-sm font-semibold text-red-600">{errors.email.message}</p>}
+              </div>
+
+              {/* Rincian Pesanan + Total */}
+              <div className="rounded-2xl border border-border bg-muted/40 p-5">
+                <p className="font-heading text-lg font-bold text-foreground">{ORDER_FORM_CONTENT.summaryTitle}</p>
+                <div className="mt-4 flex flex-col gap-3">
+                  {ORDER_FORM_CONTENT.summaryItems.map((item) => (
+                    <div key={item.label} className="flex items-start justify-between gap-3">
+                      <div>
+                        <p className="text-base font-semibold text-foreground">{item.label}</p>
+                        {item.note && <p className="text-sm text-neutral-500">{item.note}</p>}
+                      </div>
+                      <p
+                        className={`whitespace-nowrap text-base font-semibold ${
+                          item.isDiscount ? "text-green-600" : "text-foreground"
+                        }`}
+                      >
+                        {item.value}
+                      </p>
+                    </div>
+                  ))}
+                </div>
+                <div className="mt-4 flex items-center justify-between border-t border-border pt-4">
+                  <span className="font-heading text-lg font-bold text-foreground">{ORDER_FORM_CONTENT.totalLabel}</span>
+                  <span className="font-heading text-2xl font-extrabold text-primary sm:text-3xl">
+                    {ORDER_FORM_CONTENT.totalValue}
+                  </span>
+                </div>
+              </div>
+
               <p className="flex items-start gap-2 text-xs text-neutral-500">
                 <ShieldCheck className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
-                {ORDER_FORM_CONTENT.paymentNote}
+                Pembayaran via QRIS — scan sekali, bisa pakai semua bank &amp; e-wallet. Aman diproses DurianPay.
               </p>
-            </div>
 
-            {submitError && (
-              <p className="flex items-center gap-2 rounded-xl bg-red-50 px-4 py-3 text-sm font-semibold text-red-600">
-                <AlertCircle className="h-4 w-4 shrink-0" />
-                {submitError}
-              </p>
-            )}
+              {submitError && (
+                <p className="flex items-center gap-2 rounded-xl bg-red-50 px-4 py-3 text-sm font-semibold text-red-600">
+                  <AlertCircle className="h-4 w-4 shrink-0" />
+                  {submitError}
+                </p>
+              )}
 
-            <Button type="submit" variant="accent" size="lg" disabled={busy} className="mt-1 py-4 text-lg font-black tracking-wide shadow-glow-accent">
-              {busy && <Loader2 className="h-5 w-5 animate-spin" />}
-              {redirecting ? "Mengarahkan ke pembayaran…" : ORDER_FORM_CONTENT.submitLabel}
-            </Button>
-          </form>
+              <Button type="submit" variant="accent" size="lg" disabled={busy} className="mt-1 py-4 text-lg font-black tracking-wide shadow-glow-accent">
+                {busy && <Loader2 className="h-5 w-5 animate-spin" />}
+                {busy ? "Membuat QRIS…" : ORDER_FORM_CONTENT.submitLabel}
+              </Button>
+            </form>
+          )}
         </div>
       </div>
     </section>

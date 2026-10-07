@@ -114,6 +114,96 @@ export async function createPaymentLinkOrder(
   return { orderId: id, paymentUrl };
 }
 
+export type QrisPaymentResult = {
+  orderId: string;
+  qrString: string; // data:image/png;base64,... (siap dipakai <img src>)
+  paymentId: string;
+  expiresAt?: string;
+  amount: number;
+};
+
+/**
+ * Pembayaran QRIS SEAMLESS (on-page): buat order lalu charge QRIS, balikan
+ * qr_string untuk dirender langsung di halaman kita — tanpa redirect ke
+ * halaman hosted DurianPay. QRIS bisa dibayar pakai semua bank + e-wallet.
+ */
+export async function createQrisPayment(input: CreateOrderInput): Promise<QrisPaymentResult> {
+  const headers = {
+    Authorization: authHeader(),
+    "Content-Type": "application/json",
+    Accept: "application/json",
+  };
+
+  // 1) Buat order (tanpa is_payment_link). Tracking disimpan di metadata untuk CAPI.
+  const orderBody = {
+    amount: String(input.amount),
+    currency: "IDR",
+    order_ref_id: input.orderRefId,
+    customer: {
+      customer_ref_id: input.customer.email,
+      given_name: input.customer.name,
+      email: input.customer.email,
+      mobile: input.customer.mobile,
+    },
+    metadata: {
+      buyer_email: input.customer.email,
+      buyer_name: input.customer.name,
+      buyer_mobile: input.customer.mobile,
+      ...(input.tracking?.fbp ? { buyer_fbp: input.tracking.fbp } : {}),
+      ...(input.tracking?.fbc ? { buyer_fbc: input.tracking.fbc } : {}),
+      ...(input.tracking?.clientIp ? { buyer_ip: input.tracking.clientIp } : {}),
+      ...(input.tracking?.userAgent ? { buyer_ua: input.tracking.userAgent } : {}),
+    },
+    admin_fee_method: "included",
+  };
+
+  const orderRes = await fetch(`${BASE_URL}/orders`, {
+    method: "POST",
+    headers,
+    body: JSON.stringify(orderBody),
+    cache: "no-store",
+  });
+  if (!orderRes.ok) {
+    const d = await orderRes.text().catch(() => "");
+    throw new Error(`DurianPay create order ${orderRes.status}: ${d.slice(0, 300)}`);
+  }
+  const orderJson = (await orderRes.json()) as { data?: { id?: string } };
+  const orderId = orderJson.data?.id;
+  if (!orderId) {
+    throw new Error(`DurianPay order tanpa id: ${JSON.stringify(orderJson).slice(0, 200)}`);
+  }
+
+  // 2) Charge QRIS → dapat qr_string (data URI PNG).
+  const chargeRes = await fetch(`${BASE_URL}/payments/charge`, {
+    method: "POST",
+    headers,
+    body: JSON.stringify({
+      type: "QRIS",
+      request: { order_id: orderId, name: input.customer.name, amount: String(input.amount) },
+    }),
+    cache: "no-store",
+  });
+  if (!chargeRes.ok) {
+    const d = await chargeRes.text().catch(() => "");
+    throw new Error(`DurianPay charge QRIS ${chargeRes.status}: ${d.slice(0, 300)}`);
+  }
+  const chargeJson = (await chargeRes.json()) as {
+    data?: { response?: { payment_id?: string; qr_string?: string; expiration_time?: string } };
+  };
+  const r = chargeJson.data?.response;
+  if (!r?.qr_string || !r.payment_id) {
+    throw new Error(`DurianPay QRIS tanpa qr_string: ${JSON.stringify(chargeJson).slice(0, 200)}`);
+  }
+
+  return {
+    orderId,
+    qrString: r.qr_string,
+    paymentId: r.payment_id,
+    expiresAt: r.expiration_time,
+    amount: input.amount,
+  };
+}
+
 export type OrderStatus = {
   id: string;
   status: string;

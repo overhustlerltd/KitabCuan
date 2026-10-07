@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { createPaymentLinkOrder, isDurianpayConfigured } from "@/lib/durianpay";
+import { createQrisPayment, isDurianpayConfigured } from "@/lib/durianpay";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -49,15 +49,21 @@ export async function POST(request: Request) {
   const fbc = (body.fbc ?? "").toString().trim() || undefined;
 
   try {
-    const { paymentUrl } = await createPaymentLinkOrder({
+    const qris = await createQrisPayment({
       amount: PRODUCT_PRICE,
       orderRefId,
       customer: { name, email, mobile: `+62${phone}` },
       tracking: { fbp, fbc, clientIp, userAgent },
     });
-    return NextResponse.json({ ok: true, paymentUrl });
+    return NextResponse.json({
+      ok: true,
+      orderId: qris.orderId,
+      qrString: qris.qrString,
+      expiresAt: qris.expiresAt,
+      amount: qris.amount,
+    });
   } catch (err) {
-    console.error("[order] gagal buat payment link:", err);
+    console.error("[order] gagal buat pembayaran QRIS:", err);
     return NextResponse.json(
       { ok: false, message: "Gagal membuat pembayaran. Coba lagi sebentar ya." },
       { status: 502 },

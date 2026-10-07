@@ -23,15 +23,21 @@ export async function GET(request: Request) {
     return NextResponse.json({ error: "unauthorized" }, { status: 401 });
   }
 
-  // Awal hari ini menurut WIB, dinyatakan dalam ms UTC.
+  // Recap dijalankan SETELAH tengah malam & melaporkan HARI YANG BARU SELESAI (kemarin WIB).
+  // Anti-telat: walau cron molor sampai lewat tengah malam, hari yang dilaporkan tetap benar.
+  // ?day=today memaksa laporan hari berjalan (untuk tes manual).
+  const oneDay = 24 * 60 * 60 * 1000;
   const wibNow = new Date(Date.now() + WIB);
-  const startWibMs = Date.UTC(wibNow.getUTCFullYear(), wibNow.getUTCMonth(), wibNow.getUTCDate()) - WIB;
+  const startTodayWibMs = Date.UTC(wibNow.getUTCFullYear(), wibNow.getUTCMonth(), wibNow.getUTCDate()) - WIB;
+  const reportToday = url.searchParams.get("day") === "today";
+  const startMs = reportToday ? startTodayWibMs : startTodayWibMs - oneDay;
+  const endMs = reportToday ? Number.POSITIVE_INFINITY : startTodayWibMs;
   const dateLabel = new Intl.DateTimeFormat("id-ID", {
     day: "numeric",
     month: "long",
     year: "numeric",
     timeZone: "Asia/Jakarta",
-  }).format(new Date());
+  }).format(new Date(reportToday ? Date.now() : startTodayWibMs - 1000));
 
   let orders;
   try {
@@ -41,12 +47,13 @@ export async function GET(request: Request) {
     return NextResponse.json({ ok: false, error: "list_failed" }, { status: 502 });
   }
 
-  // Hitung penjualan HARI INI berdasarkan waktu BAYAR (paidAt), bukan waktu order dibuat.
-  // Order payment-link sering dibuat beda hari dari saat dibayar, jadi created_at tidak akurat.
+  // Penjualan dalam rentang hari target, berdasarkan waktu BAYAR (paidAt), bukan created_at.
   const today = orders.filter((o) => {
     if (!o.isPaid) return false;
     const ts = o.paidAt || o.createdAt;
-    return ts ? new Date(ts).getTime() >= startWibMs : false;
+    if (!ts) return false;
+    const t = new Date(ts).getTime();
+    return t >= startMs && t < endMs;
   });
   const count = today.length;
   const total = today.reduce((s, o) => s + o.amount, 0);
