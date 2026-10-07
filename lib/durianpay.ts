@@ -204,6 +204,51 @@ export async function createQrisPayment(input: CreateOrderInput): Promise<QrisPa
   };
 }
 
+export type VaResult = {
+  orderId: string;
+  bankCode: string;
+  accountNumber: string;
+  expiresAt?: string;
+  amount: number;
+};
+
+/**
+ * Charge Virtual Account pada order yang SUDAH ada (1 order bisa banyak metode).
+ * Balikan nomor VA untuk ditampilkan on-page. bank_code mis. BCA/MANDIRI/BNI/BRI/PERMATA/CIMB.
+ */
+export async function chargeVaOnOrder(
+  orderId: string,
+  bankCode: string,
+  name: string,
+  amount: number,
+): Promise<VaResult> {
+  const res = await fetch(`${BASE_URL}/payments/charge`, {
+    method: "POST",
+    headers: {
+      Authorization: authHeader(),
+      "Content-Type": "application/json",
+      Accept: "application/json",
+    },
+    body: JSON.stringify({
+      type: "VA",
+      request: { order_id: orderId, bank_code: bankCode, name, amount: String(amount) },
+    }),
+    cache: "no-store",
+  });
+  if (!res.ok) {
+    const d = await res.text().catch(() => "");
+    throw new Error(`DurianPay charge VA ${bankCode} ${res.status}: ${d.slice(0, 200)}`);
+  }
+  const j = (await res.json()) as {
+    data?: { response?: { account_number?: string; expiration_time?: string } };
+  };
+  const r = j.data?.response;
+  if (!r?.account_number) {
+    throw new Error(`DurianPay VA tanpa account_number: ${JSON.stringify(j).slice(0, 200)}`);
+  }
+  return { orderId, bankCode, accountNumber: r.account_number, expiresAt: r.expiration_time, amount };
+}
+
 export type OrderStatus = {
   id: string;
   status: string;
