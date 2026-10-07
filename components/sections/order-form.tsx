@@ -97,13 +97,10 @@ function TrustBadge() {
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img src="/trust/himbara.png" alt="HIMBARA" className="h-5 w-auto object-contain" />
         <span className="hidden h-4 w-px bg-border sm:block" />
-        {/* DurianPay */}
+        {/* DurianPay (logo resmi) */}
         <span className="flex items-center gap-1 text-xs font-extrabold text-[#d6336c]">
-          <svg viewBox="0 0 24 24" className="h-4 w-4" aria-hidden="true">
-            <polygon points="12,2 20,7 20,17 12,22 4,17 4,7" fill="#d6336c" />
-            <polygon points="12,6 16.5,8.8 16.5,15.2 12,18 7.5,15.2 7.5,8.8" fill="#fff" />
-            <polygon points="12,9 14.5,10.5 14.5,13.5 12,15 9.5,13.5 9.5,10.5" fill="#d6336c" />
-          </svg>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="/trust/durianpay.png" alt="DurianPay" className="h-4 w-4 object-contain" />
           durianpay
         </span>
       </div>
