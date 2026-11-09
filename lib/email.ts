@@ -12,6 +12,8 @@ export async function sendBrevoEmail(params: {
   to: Recipient[];
   subject: string;
   htmlContent: string;
+  /** Tag Brevo (mis. order_ref_id) supaya pengiriman bisa dilacak & dicek ulang. */
+  tags?: string[];
 }): Promise<void> {
   const apiKey = process.env.BREVO_API_KEY;
   const senderEmail = process.env.BREVO_SENDER_EMAIL;
@@ -30,6 +32,7 @@ export async function sendBrevoEmail(params: {
       to: params.to,
       subject: params.subject,
       htmlContent: params.htmlContent,
+      ...(params.tags?.length ? { tags: params.tags } : {}),
     }),
   });
 

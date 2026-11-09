@@ -96,31 +96,47 @@ export async function sendDiscordDelivered(params: {
 
 export async function sendDiscordRecap(params: {
   dateLabel: string;
-  count: number;
-  total: string;
-  lines: string[];
+  totalIdr: string; // "Rp 394.000"
+  usdLabel?: string; // "(~$21)"
+  orderCount: number;
+  customerCount: number;
+  productLines: string[]; // "• KitabCuan — Paket Usaha (197k) — 2 × Rp 394.000"
+  channelLines: string[]; // "• QRIS — 2 (Rp 394.000)"
+  feeLabel: string; // "~Rp 2.758 (0.70%)"
+  profitLabel: string; // "~Rp 391.242"
 }): Promise<{ ok: boolean; reason?: string }> {
   const url = process.env.DISCORD_WEBHOOK_URL;
   if (!url) return { ok: false, reason: "discord_not_configured" };
 
-  const description =
-    params.count === 0
-      ? "Belum ada pembelian hari ini. 🌙 Semangat besok!"
-      : params.lines.slice(0, 15).join("\n") +
-        (params.lines.length > 15 ? `\n…dan ${params.lines.length - 15} lainnya` : "");
-
+  const dash = "—";
   const body = {
     username: "KitabCuan",
     embeds: [
       {
-        title: `📊 Recap Harian — ${params.dateLabel}`,
+        title: `📊 Kitab Cuan — Ringkasan Harian (${params.dateLabel} WIB)`,
         color: 0xc9821f, // emas brand
         fields: [
-          { name: "🧾 Total Transaksi", value: `${params.count} pembelian`, inline: true },
-          { name: "💰 Total Omzet", value: params.total, inline: true },
+          {
+            name: "💰 Total Pendapatan",
+            value: `**${params.totalIdr}**${params.usdLabel ? ` ${params.usdLabel}` : ""}\n${params.orderCount} order · ${params.customerCount} pelanggan`,
+            inline: false,
+          },
+          {
+            name: "📦 Rincian Produk",
+            value: params.productLines.length ? params.productLines.join("\n") : dash,
+            inline: true,
+          },
+          {
+            name: "💳 Channel Bayar",
+            value: params.channelLines.length ? params.channelLines.join("\n") : dash,
+            inline: true,
+          },
+          { name: "🏦 Biaya DurianPay (est)", value: params.feeLabel, inline: true },
+          { name: "🟢 Laba (sebelum iklan)", value: params.profitLabel, inline: true },
         ],
-        description,
-        footer: { text: "KitabCuan • DurianPay" },
+        footer: {
+          text: "Belum termasuk biaya iklan · estimasi biaya DurianPay · sumber: DurianPay orders",
+        },
         timestamp: new Date().toISOString(),
       },
     ],
