@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { getOrder, listOrders } from "@/lib/durianpay";
 import { isKitabCuanRef } from "@/lib/purchase-notif";
-import { fulfillOrder } from "@/lib/fulfill";
+import { fulfillOrder, sendCapiForOrder } from "@/lib/fulfill";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -14,6 +14,12 @@ export const dynamic = "force-dynamic";
  *   GET /api/fulfill?key=...&scan=1              → cari order lunas yang BELUM dipenuhi
  *   GET /api/fulfill?key=...&sweep=1             → penuhi SEMUA order lunas yang terlewat
  *                                                 (opsional &hours=72 &max=25)
+ *   GET /api/fulfill?key=...&capi=1&order=ord_x  → kirim HANYA Purchase CAPI untuk order lunas
+ *                                                 (tanpa email/Discord). Untuk menambal
+ *                                                 Purchase yang belum tercatat di pixel.
+ *   ...&capi=1&order=ord_x&test=TEST12345         → sama, tapi sebagai TEST EVENT: muncul di
+ *                                                 Events Manager → Test events, tidak dihitung
+ *                                                 sebagai konversi. Cara aman cek token CAPI.
  *
  * Gunanya: menambal penjualan yang pemenuhannya terlewat (mis. pembeli menutup
  * halaman bayar sebelum poller sempat jalan, atau webhook tidak pernah sampai).
@@ -64,6 +70,55 @@ export async function GET(request: Request) {
         { status: 502 },
       );
     }
+  }
+
+  // --- Mode capi: kirim ulang HANYA Purchase CAPI untuk satu order ---
+  if (url.searchParams.get("capi") === "1") {
+    const id = url.searchParams.get("order");
+    if (!id) {
+      return NextResponse.json({ ok: false, mode: "capi", error: "parameter_order_wajib" }, { status: 400 });
+    }
+    // Kode test event dari Events Manager selalu berformat TEST + angka.
+    const testRaw = url.searchParams.get("test");
+    const testEventCode = testRaw && /^TEST[0-9A-Za-z]{1,32}$/.test(testRaw) ? testRaw : undefined;
+    if (testRaw && !testEventCode) {
+      return NextResponse.json({ ok: false, mode: "capi", error: "format_test_code_salah" }, { status: 400 });
+    }
+
+    let ord;
+    try {
+      ord = await getOrder(id);
+    } catch (err) {
+      return NextResponse.json(
+        { ok: false, mode: "capi", error: "order_tidak_ditemukan", detail: err instanceof Error ? err.message : "" },
+        { status: 404 },
+      );
+    }
+
+    // Purchase ASLI hanya untuk order KitabCuan yang benar-benar lunas.
+    // Mode test boleh pakai order apa pun karena tidak dihitung sebagai konversi.
+    if (!testEventCode) {
+      if (!isKitabCuanRef(ord.orderRefId)) {
+        return NextResponse.json({ ok: false, mode: "capi", error: "bukan_order_kitabcuan" }, { status: 400 });
+      }
+      if (!ord.isPaid) {
+        return NextResponse.json(
+          { ok: false, mode: "capi", error: "order_belum_lunas", status: ord.status },
+          { status: 400 },
+        );
+      }
+    }
+
+    const r = await sendCapiForOrder(ord, { testEventCode });
+    if (!r.ok) console.error("[fulfill/capi] gagal ref=%s %s", ord.orderRefId, r.reason);
+    return NextResponse.json({
+      mode: "capi",
+      test: Boolean(testEventCode),
+      orderRef: ord.orderRefId,
+      eventId: ord.orderRefId || ord.id,
+      paid: ord.isPaid,
+      ...r,
+    });
   }
 
   // --- Mode sweep: penuhi semua order lunas yang pemenuhannya terlewat ---

@@ -19,7 +19,7 @@
 
 import { type OrderStatus } from "@/lib/durianpay";
 import { signAccess } from "@/lib/access-token";
-import { sendMetaCapiPurchase } from "@/lib/meta-capi";
+import { sendMetaCapiPurchase, type CapiResult } from "@/lib/meta-capi";
 import { sendDiscordDelivered } from "@/lib/discord";
 import { isKitabCuanRef, notifyPurchase, productPriceNum, rp } from "@/lib/purchase-notif";
 import {
@@ -77,6 +77,35 @@ async function alreadyEmailed(email: string): Promise<boolean | null> {
 }
 
 /**
+ * Kirim Meta CAPI Purchase untuk satu order. SATU-SATUNYA tempat parameter
+ * Purchase dibentuk, dipakai oleh pemenuhan normal dan alat penambal
+ * (`/api/fulfill?capi=1`), jadi keduanya selalu identik.
+ *
+ * event_id = order ref → Meta men-dedup kalau event yang sama terkirim dua kali,
+ * jadi aman dipanggil ulang untuk menambal Purchase yang belum tercatat.
+ */
+export async function sendCapiForOrder(
+  order: OrderStatus,
+  opts: { testEventCode?: string } = {},
+): Promise<CapiResult> {
+  const ref = order.orderRefId || order.id;
+  return sendMetaCapiPurchase({
+    email: order.customerEmail,
+    phone: order.customerMobile,
+    name: order.customerName,
+    value: productPriceNum(),
+    currency: "IDR",
+    eventId: ref,
+    fbp: order.fbp,
+    fbc: order.fbc,
+    clientIp: order.clientIp,
+    userAgent: order.userAgent,
+    eventSourceUrl: `${siteUrl()}/terima-kasih`,
+    testEventCode: opts.testEventCode,
+  });
+}
+
+/**
  * Jalankan pemenuhan penuh untuk satu order yang SUDAH lunas.
  * Aman dipanggil berkali-kali: pemanggilan kedua akan di-skip.
  */
@@ -128,19 +157,7 @@ export async function fulfillOrder(opts: {
     // 1) Meta CAPI Purchase. Non-fatal. eventId = order ref, jadi Meta men-dedup
     //    seandainya pixel browser juga mengirim event yang sama.
     try {
-      const capi = await sendMetaCapiPurchase({
-        email: order.customerEmail,
-        phone: order.customerMobile,
-        name: order.customerName,
-        value: priceNum,
-        currency: "IDR",
-        eventId: ref,
-        fbp: order.fbp,
-        fbc: order.fbc,
-        clientIp: order.clientIp,
-        userAgent: order.userAgent,
-        eventSourceUrl: `${siteUrl()}/terima-kasih`,
-      });
+      const capi = await sendCapiForOrder(order);
       steps.capi = capi.ok;
       if (!capi.ok && capi.reason !== "capi_not_configured") {
         console.error("[fulfill] CAPI gagal:", capi.reason);

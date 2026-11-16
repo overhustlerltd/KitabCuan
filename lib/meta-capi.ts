@@ -29,11 +29,27 @@ export type CapiPurchaseInput = {
   clientIp?: string;
   userAgent?: string;
   eventSourceUrl?: string;
+  /**
+   * Kode dari Events Manager → Test events. Kalau diisi, event muncul di tab
+   * "Test events" dan TIDAK dihitung sebagai konversi asli. Dipakai untuk
+   * membuktikan token CAPI masih hidup tanpa mengotori data iklan.
+   */
+  testEventCode?: string;
 };
 
-export async function sendMetaCapiPurchase(
-  p: CapiPurchaseInput,
-): Promise<{ ok: boolean; reason?: string }> {
+export type CapiResult = {
+  ok: boolean;
+  reason?: string;
+  /** Jumlah event yang diterima Meta (dari respons Graph API). */
+  eventsReceived?: number;
+  /** ID jejak Meta, berguna kalau perlu lapor ke dukungan Meta. */
+  fbtraceId?: string;
+  attempts?: number;
+};
+
+const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
+
+export async function sendMetaCapiPurchase(p: CapiPurchaseInput): Promise<CapiResult> {
   const token = process.env.META_CAPI_TOKEN;
   const pid = pixelId();
   if (!token || !pid) return { ok: false, reason: "capi_not_configured" };
@@ -59,24 +75,52 @@ export async function sendMetaCapiPurchase(
         custom_data: { currency: p.currency, value: p.value },
       },
     ],
+    ...(p.testEventCode ? { test_event_code: p.testEventCode } : {}),
   };
 
-  try {
-    const res = await fetch(
-      `https://graph.facebook.com/${GRAPH_VERSION}/${pid}/events?access_token=${encodeURIComponent(token)}`,
-      {
+  const url = `https://graph.facebook.com/${GRAPH_VERSION}/${pid}/events?access_token=${encodeURIComponent(token)}`;
+
+  // Satu kali coba ulang untuk kegagalan SEMENTARA (jaringan, 429, 5xx).
+  // Error 4xx lain (token mati, parameter salah) tidak diulang — hasilnya sama.
+  // Aman diulang: event_id = order ref, jadi Meta men-dedup kalau ternyata
+  // percobaan pertama sebenarnya sudah sampai.
+  let lastReason = "capi_error";
+  for (let attempt = 1; attempt <= 2; attempt++) {
+    try {
+      const res = await fetch(url, {
         method: "POST",
         headers: { "content-type": "application/json" },
         body: JSON.stringify(body),
         cache: "no-store",
-      },
-    );
-    if (!res.ok) {
-      const t = await res.text().catch(() => "");
-      return { ok: false, reason: `meta ${res.status}: ${t.slice(0, 250)}` };
+      });
+      const text = await res.text().catch(() => "");
+      if (res.ok) {
+        let j: { events_received?: number; fbtrace_id?: string } = {};
+        try {
+          j = JSON.parse(text);
+        } catch {
+          /* respons bukan JSON — tetap anggap sukses karena status 2xx */
+        }
+        return {
+          ok: true,
+          eventsReceived: j.events_received,
+          fbtraceId: j.fbtrace_id,
+          attempts: attempt,
+        };
+      }
+      // Jangan pernah mengembalikan URL (berisi token) — cukup status + isi error.
+      lastReason = `meta ${res.status}: ${text.slice(0, 250)}`;
+      const transient = res.status === 429 || res.status >= 500;
+      if (!transient) return { ok: false, reason: scrub(lastReason, token), attempts: attempt };
+    } catch (err) {
+      lastReason = scrub(err instanceof Error ? err.message : "capi_error", token);
     }
-    return { ok: true };
-  } catch (err) {
-    return { ok: false, reason: err instanceof Error ? err.message : "capi_error" };
+    if (attempt === 1) await sleep(800);
   }
+  return { ok: false, reason: scrub(lastReason, token), attempts: 2 };
+}
+
+/** Pastikan token tidak pernah ikut keluar lewat pesan error / log. */
+function scrub(reason: string, token: string): string {
+  return token ? reason.split(token).join("[token]") : reason;
 }
