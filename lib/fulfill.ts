@@ -4,7 +4,9 @@
 //   - app/api/durianpay/webhook/route.ts  (kalau webhook DurianPay memang sampai)
 //   - app/api/order/status/route.ts       (poller halaman bayar — jalur utama saat
 //                                          slot primary webhook dipegang produk lain)
-//   - app/api/fulfill/route.ts            (pemicu manual admin / kirim ulang)
+//   - app/api/fulfill/route.ts            (pemicu manual admin / kirim ulang, dan
+//                                          sweep terjadwal yang menambal order lunas
+//                                          yang luput dari webhook maupun poller)
 //
 // Langkahnya: Meta CAPI → notif Discord pembelian → email akses ke pembeli
 // (Brevo) → notif Discord terkirim → email notifikasi admin.
@@ -27,7 +29,7 @@ import {
   isBrevoConfigured,
 } from "@/lib/email";
 
-export type FulfillTrigger = "webhook" | "poll" | "manual";
+export type FulfillTrigger = "webhook" | "poll" | "manual" | "sweep";
 
 export type FulfillResult = {
   ok: boolean;

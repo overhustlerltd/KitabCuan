@@ -1,5 +1,6 @@
 {
   "crons": [
-    { "path": "/api/recap", "schedule": "30 17 * * *" }
+    { "path": "/api/recap", "schedule": "30 17 * * *" },
+    { "path": "/api/fulfill?sweep=1", "schedule": "*/15 * * * *" }
   ]
 }

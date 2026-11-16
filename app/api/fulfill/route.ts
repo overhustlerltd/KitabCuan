@@ -12,9 +12,17 @@ export const dynamic = "force-dynamic";
  *   GET /api/fulfill?key=...&order=ord_xxxxx     → penuhi satu order
  *   GET /api/fulfill?key=...&order=ord_x&force=1 → kirim ulang walau sudah pernah
  *   GET /api/fulfill?key=...&scan=1              → cari order lunas yang BELUM dipenuhi
+ *   GET /api/fulfill?key=...&sweep=1             → penuhi SEMUA order lunas yang terlewat
+ *                                                 (opsional &hours=72 &max=25)
  *
  * Gunanya: menambal penjualan yang pemenuhannya terlewat (mis. pembeli menutup
  * halaman bayar sebelum poller sempat jalan, atau webhook tidak pernah sampai).
+ *
+ * Mode `sweep` dijalankan terjadwal lewat Vercel Cron (lihat vercel.json). Ini
+ * jaring pengaman terakhir: selama order lunas tercatat di DurianPay, pembeli
+ * tetap dapat produknya walau webhook DurianPay diam sama sekali. fulfillOrder()
+ * idempoten (riwayat Brevo jadi penanda lintas-instance), jadi sweep berulang
+ * TIDAK mengirim email dua kali ke pembeli yang sama.
  *
  * Auth: `?key=` cocok dengan NOTIF_TEST_SECRET atau ACCESS_TOKEN_SECRET,
  * atau header `Authorization: Bearer <CRON_SECRET>`.
@@ -56,6 +64,68 @@ export async function GET(request: Request) {
         { status: 502 },
       );
     }
+  }
+
+  // --- Mode sweep: penuhi semua order lunas yang pemenuhannya terlewat ---
+  if (url.searchParams.get("sweep") === "1") {
+    const hours = Math.min(Math.max(Number(url.searchParams.get("hours")) || 72, 1), 720);
+    const max = Math.min(Math.max(Number(url.searchParams.get("max")) || 25, 1), 100);
+    const cutoff = Date.now() - hours * 60 * 60 * 1000;
+
+    let candidates;
+    try {
+      const orders = await listOrders(100);
+      candidates = orders
+        .filter((o) => o.isPaid && isKitabCuanRef(o.orderRefId))
+        .filter((o) => {
+          const ts = o.paidAt || o.createdAt;
+          return ts ? new Date(ts).getTime() >= cutoff : false;
+        })
+        .slice(0, max);
+    } catch (err) {
+      return NextResponse.json(
+        { ok: false, mode: "sweep", error: err instanceof Error ? err.message : "list_failed" },
+        { status: 502 },
+      );
+    }
+
+    const results: Array<Record<string, unknown>> = [];
+    let delivered = 0;
+    let skipped = 0;
+    let failed = 0;
+
+    for (const cand of candidates) {
+      try {
+        const full = await getOrder(cand.id);
+        const r = await fulfillOrder({ order: full, trigger: "sweep", force });
+        if (r.delivered) delivered++;
+        else if (r.ok) skipped++;
+        else failed++;
+        results.push({ id: cand.id, ref: cand.orderRefId, ...r });
+      } catch (err) {
+        failed++;
+        results.push({
+          id: cand.id,
+          ref: cand.orderRefId,
+          ok: false,
+          error: err instanceof Error ? err.message : "fulfill_failed",
+        });
+      }
+    }
+
+    if (delivered > 0) {
+      console.log("[fulfill/sweep] menambal %d pesanan yang terlewat", delivered);
+    }
+    return NextResponse.json({
+      ok: failed === 0,
+      mode: "sweep",
+      windowHours: hours,
+      scanned: candidates.length,
+      delivered,
+      skipped,
+      failed,
+      results,
+    });
   }
 
   const orderId = url.searchParams.get("order");
